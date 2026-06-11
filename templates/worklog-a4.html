@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  worklog-a4.html — 工作日誌 template（A4 直式，單頁）
+  ═══════════════════════════════════════════════════════════
+  用途：每日工作日誌，以 Cmd+P 匯出 PDF 或留存歸檔。結構為：
+  日期資訊、今日摘要、工作項目（投入時間＋狀態）、問題與阻礙、
+  明日計劃。把「日」改為「週」、項目改為當週成果，即為週報。
+
+  手動使用：替換 .log-info 與各區塊內容；工作項目列（tbody tr）
+  照樣式增刪即可。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 摘要限三句以內，寫結果不寫過程；狀態僅限：完成／進行中／受阻
+  3. 「問題與阻礙」要寫到需要誰協助、卡在哪一步，無則整段刪除
+  4. 維持單頁；禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工作日誌 2026-06-11</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 18mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.75;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.9rem; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 17pt; font-weight: 700; letter-spacing: 0.12em; }
+    .doc-header .date { font-size: 12pt; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .doc-header .date small { display: block; font-size: 8pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.15em; text-align: right; }
+
+    /* 基本資訊 */
+    .log-info { display: flex; gap: 2.5rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.6rem; margin-bottom: 1.4rem; font-size: 9pt; }
+    .log-info span { color: var(--ink-light); font-size: 8.5pt; margin-right: 0.7em; }
+
+    /* 區塊 */
+    section { margin-bottom: 1.5rem; }
+    h2 {
+      font-size: 10pt; font-weight: 700; letter-spacing: 0.25em;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.6rem;
+    }
+    p { margin-bottom: 0.5rem; text-align: justify; }
+    ul { padding-left: 1.6rem; margin-bottom: 0.5rem; }
+
+    /* 摘要框 */
+    .summary { background: var(--bg-soft); padding: 0.7rem 1rem; font-size: 9.5pt; }
+
+    /* 工作項目表 */
+    table { width: 100%; border-collapse: collapse; margin: 0.4rem 0; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.35rem 0.6rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.4rem 0.6rem; vertical-align: top; }
+    td small { color: var(--ink-light); font-size: 8pt; display: block; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .center { text-align: center; }
+
+    /* 問題與阻礙 */
+    .blocker { border: 1px solid var(--ink); padding: 0.6rem 1rem; font-size: 9.5pt; }
+    .blocker > b:first-child { display: block; font-size: 8.5pt; letter-spacing: 0.25em; color: var(--accent); margin-bottom: 0.2rem; }
+
+    /* 文件尾 */
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 2rem; padding-top: 0.5rem; font-size: 8pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    /* 分頁控制 */
+    section, table, .blocker { break-inside: avoid; }
+    h2 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>工作日誌</h1>
+    <div class="date">
+      2026-06-11
+      <small>星期四 · 第 24 週</small>
+    </div>
+  </header>
+
+  <div class="log-info">
+    <div><span>填寫人</span>陳柏宇</div>
+    <div><span>部門</span>後端平台組</div>
+    <div><span>專案</span>訂單服務效能改造</div>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>今日摘要</h2>
+      <p class="summary">完成庫存扣減分片計數的設計文件並通過組內審查；壓測腳本改寫進度約七成。資料庫升級窗口因 DBA 排程衝突順延一週。</p>
+    </section>
+
+    <section>
+      <h2>工作項目</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:6%">#</th>
+            <th>項目</th>
+            <th class="num" style="width:12%">投入</th>
+            <th class="center" style="width:12%">狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>分片計數設計文件審查會議與修訂<small>依審查意見補充故障回復章節</small></td>
+            <td class="num">3.0 h</td>
+            <td class="center">完成</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>k6 壓測腳本改寫為情境式流量模型<small>剩餘付款失敗重試情境未完成</small></td>
+            <td class="num">2.5 h</td>
+            <td class="center">進行中</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>協助值班排查訂單查詢逾時告警<small>確認為快取節點記憶體不足，已擴容</small></td>
+            <td class="num">1.0 h</td>
+            <td class="center">完成</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>資料庫版本升級演練</td>
+            <td class="num">—</td>
+            <td class="center">受阻</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>問題與阻礙</h2>
+      <div class="blocker">
+        <b>需要協助</b>
+        資料庫升級演練原訂本週五，DBA 團隊排程衝突改至下週四（06-18）。連帶影響壓測時程，需主管確認是否同步順延，或先以現版本資料庫進行第一輪壓測。
+      </div>
+    </section>
+
+    <section>
+      <h2>明日計劃</h2>
+      <ul>
+        <li>完成壓測腳本付款失敗重試情境，提交程式碼審查。</li>
+        <li>與主管確認壓測時程調整方案。</li>
+        <li>開始撰寫分片計數的資料遷移腳本。</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="doc-footer">
+    <span>工作日誌 · 陳柏宇 · 2026-06-11</span>
+    <span>機密等級：內部使用</span>
+  </footer>
+
+</body>
+</html>

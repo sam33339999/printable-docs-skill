@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  memory/flashcards-a4.html — 萊特納字卡（A4 直式，雙面兩頁）
+  ═══════════════════════════════════════════════════════════
+  用途：萊特納盒（Leitner System）紙本字卡。一張 A4 印 8 卡，
+  第 1 頁為正面（問題）、第 2 頁為背面（答案），背面欄位已
+  左右對調，雙面列印選「沿長邊翻轉」即正背對位，裁切後使用。
+  卡片角落的 1–5 小格是盒層記號：答對畫記升一層，答錯回第 1 層。
+  第 1 層每天複習、第 2 層隔天、第 3 層每週、第 4 層雙週、
+  第 5 層每月。
+
+  手動使用：替換卡片內文字；一頁固定 8 卡，多於 8 張就複製
+  整組兩頁（正面一頁＋背面一頁），不要只複製單頁。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 正背對位規則不可破壞：正面順序 1,2／3,4／5,6／7,8，
+     背面同列左右對調為 2,1／4,3／6,5／8,7；產出後逐卡核對
+     編號相符
+  3. 一卡一個知識點：正面是問題或單字，背面是答案要點；
+     內容塞不下就拆成兩張卡，不要縮小字級
+  4. 超過 8 卡時複製「正面頁＋背面頁」成對新增，並維持每頁
+     開頭的對位說明列（兩頁等高，否則裁切會歪）
+  5. 禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>萊特納字卡</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 12mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.55;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    .sheet { page-break-after: always; }
+    .sheet:last-child { page-break-after: auto; }
+    .sheet-label { height: 7mm; font-size: 7.5pt; color: var(--ink-light); display: flex; justify-content: space-between; align-items: center; }
+    .sheet-label b { font-weight: 700; letter-spacing: 0.2em; color: var(--ink); }
+
+    /* 卡片網格：沿虛線裁切 */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, 65mm); border: 1px dashed var(--rule); }
+    .card { border: 1px dashed var(--rule); padding: 5mm 6mm; display: flex; flex-direction: column; position: relative; }
+    .card .no { font-size: 7.5pt; color: var(--ink-light); font-variant-numeric: tabular-nums; letter-spacing: 0.1em; }
+    .card .body { flex: 1; display: flex; align-items: center; }
+    .card .body p { width: 100%; text-align: center; }
+    .front .body p { font-size: 13pt; font-weight: 700; }
+    .front .body p small { display: block; font-size: 8.5pt; font-weight: 400; color: var(--ink-light); margin-top: 0.3rem; }
+    .back .body p { font-size: 9.5pt; text-align: left; }
+    .back .body p b { color: var(--accent); }
+    .levels { display: flex; gap: 1.4mm; align-items: center; justify-content: flex-end; font-size: 6.5pt; color: var(--ink-light); }
+    .levels i { font-style: normal; letter-spacing: 0.1em; margin-right: 0.6mm; }
+    .levels span { display: inline-block; width: 3.4mm; height: 3.4mm; border: 1px solid var(--ink); }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ 第 1 頁：正面（問題） ═══ -->
+  <div class="sheet">
+    <div class="sheet-label">
+      <span><b>正面</b>　雙面列印選「沿長邊翻轉」，印完沿虛線裁切</span>
+      <span>盒層：1 每天 · 2 隔天 · 3 每週 · 4 雙週 · 5 每月｜答對升層，答錯回 1</span>
+    </div>
+    <div class="grid">
+      <div class="card front">
+        <div class="no">C-01</div>
+        <div class="body"><p>ubiquitous<small>adj.</small></p></div>
+        <div class="levels"><i>盒</i><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="card front">
+        <div class="no">C-02</div>
+        <div class="body"><p>ephemeral<small>adj.</small></p></div>
+        <div class="levels"><i>盒</i><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="card front">
+        <div class="no">C-03</div>
+        <div class="body"><p>pragmatic<small>adj.</small></p></div>
+        <div class="levels"><i>盒</i><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="card front">
+        <div class="no">C-04</div>
+        <div class="body"><p>ambiguous<small>adj.</small></p></div>
+        <div class="levels"><i>盒</i><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="card front">
+        <div class="no">C-05</div>
+        <div class="body"><p>mitigate<small>v.</small></p></div>
+        <div class="levels"><i>盒</i><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="card front">
+        <div class="no">C-06</div>
+        <div class="body"><p>resilient<small>adj.</small></p></div>
+        <div class="levels"><i>盒</i><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="card front">
+        <div class="no">C-07</div>
+        <div class="body"><p>deteriorate<small>v.</small></p></div>
+        <div class="levels"><i>盒</i><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="card front">
+        <div class="no">C-08</div>
+        <div class="body"><p>feasible<small>adj.</small></p></div>
+        <div class="levels"><i>盒</i><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 第 2 頁：背面（答案）— 同列左右對調以對位 ═══ -->
+  <div class="sheet">
+    <div class="sheet-label">
+      <span><b>背面</b>　本頁欄位已左右對調，與正面雙面對位</span>
+      <span>核對方式：裁切前對光看，正背編號應重疊</span>
+    </div>
+    <div class="grid">
+      <div class="card back">
+        <div class="no">C-02</div>
+        <div class="body"><p><b>短暫的、朝生暮死的</b><br>fame that proved ephemeral——曇花一現的名聲。同義：transient、fleeting。</p></div>
+      </div>
+      <div class="card back">
+        <div class="no">C-01</div>
+        <div class="body"><p><b>無所不在的</b><br>smartphones are ubiquitous——智慧型手機無所不在。同義：omnipresent、pervasive。</p></div>
+      </div>
+      <div class="card back">
+        <div class="no">C-04</div>
+        <div class="body"><p><b>模稜兩可的、含糊的</b><br>an ambiguous reply——含糊其辭的回覆。名詞 ambiguity；反義：unambiguous、explicit。</p></div>
+      </div>
+      <div class="card back">
+        <div class="no">C-03</div>
+        <div class="body"><p><b>務實的、實事求是的</b><br>a pragmatic approach to the problem——務實的解法。名詞 pragmatism。</p></div>
+      </div>
+      <div class="card back">
+        <div class="no">C-06</div>
+        <div class="body"><p><b>有韌性的、能迅速恢復的</b><br>a resilient system——具韌性的系統。名詞 resilience。</p></div>
+      </div>
+      <div class="card back">
+        <div class="no">C-05</div>
+        <div class="body"><p><b>緩解、減輕</b><br>mitigate the risk——降低風險。名詞 mitigation；比較：alleviate（緩解痛苦）。</p></div>
+      </div>
+      <div class="card back">
+        <div class="no">C-08</div>
+        <div class="body"><p><b>可行的</b><br>a feasible plan——可行的計畫。名詞 feasibility（可行性研究 feasibility study）。</p></div>
+      </div>
+      <div class="card back">
+        <div class="no">C-07</div>
+        <div class="body"><p><b>惡化、變壞</b><br>his health deteriorated——健康惡化。名詞 deterioration；反義：improve。</p></div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

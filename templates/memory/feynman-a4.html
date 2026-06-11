@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  memory/feynman-a4.html — 費曼技巧工作表（A4 直式，單頁手寫）
+  ═══════════════════════════════════════════════════════════
+  用途：費曼技巧（Feynman Technique）四步驟工作表。
+  選一個概念，用白話解釋給外行人聽，標出卡住的地方，
+  回教材補洞，最後用更短的話加類比重述。寫不順的段落
+  就是還沒懂的地方——這張表的價值在「寫不出來」被看見。
+
+  手動使用：純手寫頁，一個概念一張，直接列印。
+  只需改頁首欄位或留白手填。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 本頁設計為手寫工作表：各步驟區一律留白，只能代填
+     頁首的「概念」「來源」欄；解釋必須由本人手寫才有效果
+  3. 各區的灰色提示文字是方法說明，保留不要刪
+  4. 維持單頁；禁用 emoji 與裝飾性元素
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>費曼技巧工作表</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 13mm 14mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 9pt;
+      line-height: 1.5;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 頁首 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.5rem; margin-bottom: 0.7rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 13pt; font-weight: 700; }
+    .doc-header h1 small { font-size: 8pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.3em; margin-left: 0.8em; }
+    .doc-header .meta { font-size: 8.5pt; color: var(--ink-light); }
+    .doc-header .meta b { display: inline-block; color: var(--ink); font-weight: 500; border-bottom: 1px solid var(--rule); min-width: 9em; margin: 0 1.2em 0 0.4em; }
+
+    /* 步驟區 */
+    section { border: 1px solid var(--ink); margin-bottom: 0.7rem; break-inside: avoid; }
+    section h2 { display: flex; align-items: baseline; gap: 0.7em; font-size: 9.5pt; font-weight: 700; border-bottom: 1px solid var(--rule); padding: 0.25rem 0.6rem; }
+    section h2 .step { color: var(--accent); font-variant-numeric: tabular-nums; letter-spacing: 0.1em; font-size: 8.5pt; }
+    section h2 small { font-weight: 400; font-size: 7.5pt; color: var(--ink-light); margin-left: auto; text-align: right; }
+    .pad { padding: 0.3rem 0.6rem 0.5rem; }
+    .lines { background-image: repeating-linear-gradient(to bottom, transparent, transparent calc(8mm - 1px), var(--rule) calc(8mm - 1px), var(--rule) 8mm); }
+    .h1x { height: 64mm; }
+    .h2x { height: 32mm; }
+    .h4x { height: 40mm; }
+
+    /* 第三步表 */
+    table { width: 100%; border-collapse: collapse; }
+    th { font-weight: 500; font-size: 7.5pt; letter-spacing: 0.1em; color: var(--ink-light); border-bottom: 1px solid var(--ink); padding: 0.2rem 0.5rem; text-align: left; }
+    td { border-bottom: 1px solid var(--rule); height: 9mm; padding: 0.15rem 0.5rem; }
+    tr:last-child td { border-bottom: none; }
+
+    .doc-footer { border-top: 1px solid var(--rule); padding-top: 0.3rem; font-size: 7.5pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>費曼技巧工作表<small>教不會別人＝自己沒懂</small></h1>
+    <div class="meta">概念<b></b>來源／頁數<b></b>日期<b style="min-width:5em"></b></div>
+  </header>
+
+  <section>
+    <h2><span class="step">第一步</span>用白話解釋<small>假裝對方是國中生：不准用行話，要用例子</small></h2>
+    <div class="pad"><div class="lines h1x"></div></div>
+  </section>
+
+  <section>
+    <h2><span class="step">第二步</span>標出卡住的地方<small>解釋不下去、繞圈子、忍不住用行話的段落，逐條列出</small></h2>
+    <div class="pad"><div class="lines h2x"></div></div>
+  </section>
+
+  <section>
+    <h2><span class="step">第三步</span>回教材補洞<small>只查第二步列出的洞，查完寫下這次看懂了什麼</small></h2>
+    <div class="pad" style="padding-top:0.15rem">
+      <table>
+        <thead>
+          <tr><th style="width:34%">卡住的點</th><th>查完之後的理解</th><th style="width:14%">出處頁數</th></tr>
+        </thead>
+        <tbody>
+          <tr><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="step">第四步</span>簡化重述<small>比第一步更短，加上一個自己想的類比</small></h2>
+    <div class="pad"><div class="lines h4x"></div></div>
+  </section>
+
+  <footer class="doc-footer">
+    <span>費曼技巧 · 一個概念一張</span>
+    <span>檢驗：把第四步唸給真人聽，對方能複述才過關</span>
+  </footer>
+
+</body>
+</html>

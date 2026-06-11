@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  agenda-a4.html — 會議議程 template（A4 直式，單頁）
+  ═══════════════════════════════════════════════════════════
+  用途：會前發給與會者的議程，以 Cmd+P 匯出 PDF 或直接附在
+  行事曆邀請。結構為：會議資訊、議程表（時間＋議題＋報告人＋
+  會前準備）、與會名單、會前資料。會後記錄請改用 minutes-a4.html。
+
+  手動使用：替換 .meeting-info 與議程列（tbody tr）；議程列
+  可增刪，時間欄自行確保前後銜接。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 每項議題標注目的：報告／討論／決策 三選一；需要當場拍板的
+     議題一律標「決策」並寫明要決定什麼
+  3. 時段必須前後銜接無空隙，總時長與會議時間一致，產出前自行驗算
+  4. 維持單頁；禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>會議議程：第三季產品規劃會議</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+      --font-mono: 'SF Mono', 'Consolas', 'Noto Sans TC', 'Heiti TC', monospace;
+    }
+    @page { size: A4; margin: 18mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.7;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.8rem; margin-bottom: 0.9rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 15pt; font-weight: 700; line-height: 1.4; }
+    .doc-header h1 small { display: block; font-size: 8.5pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.3em; }
+    .doc-header .when { text-align: right; font-size: 10.5pt; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .doc-header .when small { display: block; font-size: 8pt; font-weight: 400; color: var(--ink-light); }
+
+    /* 會議資訊 */
+    .meeting-info { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.2rem 2rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.7rem; margin-bottom: 1.3rem; font-size: 9.5pt; }
+    .meeting-info span { color: var(--ink-light); font-size: 8pt; display: block; }
+
+    /* 區塊 */
+    section { margin-bottom: 1.4rem; }
+    h2 {
+      font-size: 10pt; font-weight: 700; letter-spacing: 0.25em;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.6rem;
+    }
+    ul { padding-left: 1.6rem; margin-bottom: 0.5rem; }
+
+    /* 議程表 */
+    table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.35rem 0.5rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.45rem 0.5rem; vertical-align: top; }
+    td small { color: var(--ink-light); font-size: 8pt; display: block; }
+    .time { font-family: var(--font-mono); font-size: 9pt; white-space: nowrap; }
+    .center { text-align: center; }
+    .kind { font-size: 8pt; letter-spacing: 0.15em; border: 1px solid var(--ink); padding: 0 0.4em; white-space: nowrap; }
+    .kind-decide { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+    /* 注意事項 */
+    .notes { font-size: 9pt; color: var(--ink-light); }
+
+    /* 文件尾 */
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 1.8rem; padding-top: 0.5rem; font-size: 8pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    section, table { break-inside: avoid; }
+    h2 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>
+      <small>會議議程</small>
+      第三季產品規劃會議
+    </h1>
+    <div class="when">
+      2026-06-25（四）14:00–16:00
+      <small>八樓第一會議室 / Google Meet</small>
+    </div>
+  </header>
+
+  <div class="meeting-info">
+    <div><span>主持人</span>張惟誠 產品總監</div>
+    <div><span>記錄</span>陳柏宇</div>
+    <div><span>會議目標</span>定案第三季 roadmap 與資源分配</div>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>議程</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:16%">時間</th>
+            <th>議題</th>
+            <th style="width:9%" class="center">目的</th>
+            <th style="width:13%">報告人</th>
+            <th style="width:24%">會前準備</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="time">14:00–14:10</td>
+            <td>開場與上次行動項目追蹤</td>
+            <td class="center"><span class="kind">報告</span></td>
+            <td>張惟誠</td>
+            <td>瀏覽 MM-2026-023 行動項目</td>
+          </tr>
+          <tr>
+            <td class="time">14:10–14:40</td>
+            <td>第二季指標總結與留存改善成果<small>含初始設定流程漏斗對比報告</small></td>
+            <td class="center"><span class="kind">報告</span></td>
+            <td>許芳瑜</td>
+            <td>會前資料一：數據報告</td>
+          </tr>
+          <tr>
+            <td class="time">14:40–15:20</td>
+            <td>第三季 roadmap 候選項目排序<small>決定：前三順位項目與各自負責 PM</small></td>
+            <td class="center"><span class="kind kind-decide">決策</span></td>
+            <td>林佳蓉</td>
+            <td>會前資料二：候選清單，請先完成個人排序</td>
+          </tr>
+          <tr>
+            <td class="time">15:20–15:45</td>
+            <td>工程資源分配與依賴盤點<small>決定：平台組投入比例（改造案 vs 新功能）</small></td>
+            <td class="center"><span class="kind kind-decide">決策</span></td>
+            <td>陳柏宇</td>
+            <td>會前資料三：人力盤點表</td>
+          </tr>
+          <tr>
+            <td class="time">15:45–16:00</td>
+            <td>結論確認與行動項目指派</td>
+            <td class="center"><span class="kind">討論</span></td>
+            <td>張惟誠</td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>與會者</h2>
+      <ul>
+        <li>必須出席：張惟誠、林佳蓉、陳柏宇、許芳瑜、David Liu</li>
+        <li>選擇性出席：客服部 王心妤（議題二相關）</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>會前資料與注意事項</h2>
+      <ul class="notes">
+        <li>會前資料一至三已於 06-24 中午前寄出，請於會前完成閱讀；決策議題不在會中重新講解背景。</li>
+        <li>遠端與會者請提前五分鐘測試連線；本會議錄影留存。</li>
+        <li>議題如未能於時限內達成決議，由主持人裁示改為線下決策，不延長會議。</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="doc-footer">
+    <span>第三季產品規劃會議 · 議程 v1.0 · 2026-06-22 發出</span>
+    <span>機密等級：內部使用</span>
+  </footer>
+
+</body>
+</html>

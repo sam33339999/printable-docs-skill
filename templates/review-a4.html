@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  review-a4.html — 績效考核表 template（A4 直式）
+  ═══════════════════════════════════════════════════════════
+  用途：期末績效考核表，以 Cmd+P 匯出 PDF 後面談簽認。結構為：
+  員工資訊、上期目標回顧（權重＋自評＋主管評）、核心職能評估、
+  總評等第、下期目標、面談記錄、三方簽名。
+
+  手動使用：替換 .employee 資訊與各表格內容；目標列、職能列
+  （tbody tr）照樣式增刪，權重合計須為 100%。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 目標達成說明寫可驗證的結果與數字，不寫「努力」「積極」等形容詞
+  3. 總評等第僅限：S／A／B／C／D，勾選一項；自評與主管評分開填寫
+  4. 下期目標需符合可衡量原則，每項都要有衡量方式
+  5. 禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>績效考核表 2026 上半年</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 16mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.7;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.8rem; margin-bottom: 0.9rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 16pt; font-weight: 700; letter-spacing: 0.2em; }
+    .doc-header .period { font-size: 10pt; font-weight: 500; }
+    .doc-header .period small { display: block; font-size: 8pt; font-weight: 400; color: var(--ink-light); text-align: right; letter-spacing: 0.2em; }
+
+    /* 員工資訊 */
+    .employee { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.3rem 1.5rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.7rem; margin-bottom: 1.2rem; font-size: 9.5pt; }
+    .employee span { color: var(--ink-light); font-size: 8pt; display: block; }
+
+    /* 區塊 */
+    section { margin-bottom: 1.4rem; }
+    h2 {
+      font-size: 10pt; font-weight: 700; letter-spacing: 0.25em;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.6rem;
+    }
+
+    /* 表格 */
+    table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.35rem 0.5rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.45rem 0.5rem; vertical-align: top; }
+    td small { color: var(--ink-light); font-size: 8pt; display: block; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .center { text-align: center; }
+    .scale-note { font-size: 8pt; color: var(--ink-light); margin-top: 0.3rem; }
+
+    /* 總評等第 */
+    .grades { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.8rem; }
+    .grades div { border: 1px solid var(--ink); text-align: center; padding: 0.4rem 0; font-size: 10pt; }
+    .grades div b { display: block; font-size: 12pt; }
+    .grades div small { font-size: 7.5pt; color: var(--ink-light); }
+    .grades .checked { background: var(--ink); color: #fff; }
+    .grades .checked small { color: #ddd; }
+
+    /* 面談記錄 */
+    .comment { border: 1px solid var(--rule); min-height: 22mm; padding: 0.6rem 0.9rem; font-size: 9.5pt; }
+
+    /* 簽名 */
+    .signoff { display: flex; gap: 2.5rem; margin-top: 1.8rem; }
+    .signoff div { flex: 1; border-top: 1px solid var(--ink); padding-top: 0.35rem; font-size: 8.5pt; color: var(--ink-light); }
+
+    .doc-footer { margin-top: 1.5rem; padding-top: 0.5rem; border-top: 1px solid var(--rule); font-size: 7.5pt; color: var(--ink-light); text-align: center; }
+
+    section, table, .grades, .signoff { break-inside: avoid; }
+    h2 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>績效考核表</h1>
+    <div class="period">
+      2026 上半年
+      <small>考核期間 01-01 至 06-30</small>
+    </div>
+  </header>
+
+  <div class="employee">
+    <div><span>姓名</span>陳柏宇</div>
+    <div><span>部門</span>後端平台組</div>
+    <div><span>職級</span>資深工程師 P5</div>
+    <div><span>直屬主管</span>林佳蓉</div>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>上期目標回顧</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>目標</th>
+            <th class="num" style="width:9%">權重</th>
+            <th style="width:34%">達成說明</th>
+            <th class="center" style="width:9%">自評</th>
+            <th class="center" style="width:10%">主管評</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>訂單服務 P99 延遲降至 500ms 以內<small>衡量：促銷壓測報告</small></td>
+            <td class="num">40%</td>
+            <td>1,200 RPS 下 P99 412ms，達標；1,500 RPS 改造案已立項並完成設計。</td>
+            <td class="center">4</td>
+            <td class="center">4</td>
+          </tr>
+          <tr>
+            <td>建立壓測例行化流程<small>衡量：納入發布流程並執行兩次</small></td>
+            <td class="num">30%</td>
+            <td>流程文件完成並執行一次，第二次因排程順延至七月，部分達成。</td>
+            <td class="center">3</td>
+            <td class="center">3</td>
+          </tr>
+          <tr>
+            <td>帶領一名初階工程師獨立負責模組<small>衡量：該員可獨立完成需求至上線</small></td>
+            <td class="num">30%</td>
+            <td>學弟已獨立完成退貨模組兩個需求並上線，程式碼審查退回率由 60% 降至 20%。</td>
+            <td class="center">5</td>
+            <td class="center">4</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="scale-note">評分標準：5 大幅超越　4 超越　3 達成　2 部分達成　1 未達成；權重合計 100%。</p>
+    </section>
+
+    <section>
+      <h2>核心職能</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:18%">職能</th>
+            <th>行為事例</th>
+            <th class="center" style="width:9%">自評</th>
+            <th class="center" style="width:10%">主管評</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>當責</td>
+            <td>查詢逾時告警主動跨組追到快取根因並補齊監控，未推回值班。</td>
+            <td class="center">4</td>
+            <td class="center">5</td>
+          </tr>
+          <tr>
+            <td>協作</td>
+            <td>與 DBA 排程衝突時主動提出備案並照會雙方主管，未讓時程僵持。</td>
+            <td class="center">4</td>
+            <td class="center">4</td>
+          </tr>
+          <tr>
+            <td>溝通</td>
+            <td>設計文件審查獲組內好評；對外部門簡報仍偏技術細節，需練習換位。</td>
+            <td class="center">3</td>
+            <td class="center">3</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>總評等第（主管勾選）</h2>
+      <div class="grades">
+        <div><b>S</b><small>卓越，前 5%</small></div>
+        <div class="checked"><b>A</b><small>優於期望</small></div>
+        <div><b>B</b><small>符合期望</small></div>
+        <div><b>C</b><small>待改進</small></div>
+        <div><b>D</b><small>不符期望</small></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>下期目標（2026 下半年）</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>目標</th>
+            <th class="num" style="width:9%">權重</th>
+            <th style="width:38%">衡量方式</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>完成訂單服務分片改造並全量上線</td><td class="num">50%</td><td>1,500 RPS 錯誤率低於 0.1%，9 月前全量切換</td></tr>
+          <tr><td>對外部門技術簡報能力</td><td class="num">20%</td><td>主講兩次跨部門分享，回饋問卷平均 4 分以上</td></tr>
+          <tr><td>持續帶人並建立模組接班深度</td><td class="num">30%</td><td>退貨模組達成兩人皆可獨立 on-call</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>面談記錄</h2>
+      <div class="comment">
+        雙方同意上述評核結果。員工提出希望下半年參加架構師培訓課程，主管同意納入部門教育訓練預算申請；簡報能力將安排資深 PM 一對一指導兩次。
+      </div>
+    </section>
+
+  </main>
+
+  <div class="signoff">
+    <div>員工簽名及日期</div>
+    <div>主管簽名及日期</div>
+    <div>人資複核</div>
+  </div>
+
+  <footer class="doc-footer">
+    本表為人事機密文件，考核結果與調薪、晉升作業之關聯依公司人事管理辦法辦理。
+  </footer>
+
+</body>
+</html>

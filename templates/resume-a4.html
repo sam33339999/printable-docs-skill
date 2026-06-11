@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  resume-a4.html — 履歷/單頁設計 template（A4 直式，嚴格一頁）
+  ═══════════════════════════════════════════════════════════
+  用途：履歷。主欄（經歷、專案）＋窄欄（技能、學歷、語言）
+  的雙欄單頁排版。
+
+  手動使用：替換抬頭姓名與聯絡方式；.job 與 .project 區塊
+  可複製增刪；窄欄各區塊（aside section）亦同。
+
+  給 AI 的指示：以本檔為底稿產出履歷時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 嚴格控制在一頁：經歷至多 3 段、每段至多 3 個要點，
+     寧可刪內容，不可縮小字級或邊界
+  3. 要點寫「做了什麼＋可量化的結果」，不寫空泛形容詞
+  4. 不加照片、圖示、技能條（progress bar）
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>陳柏睿 — 後端工程師</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+      --font-display: 'Noto Serif TC', 'Songti TC', 'Noto Sans TC', 'Heiti TC', serif;
+    }
+    @page { size: A4; margin: 13mm 14mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 9.5pt;
+      line-height: 1.6;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 780px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 抬頭 */
+    .id { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2.5px solid var(--ink); padding-bottom: 0.7rem; margin-bottom: 1.1rem; }
+    .id h1 { font-family: var(--font-display); font-size: 22pt; font-weight: 900; line-height: 1.2; }
+    .id .role { font-size: 10pt; color: var(--ink-light); letter-spacing: 0.15em; margin-top: 0.2rem; }
+    .id .contact { text-align: right; font-size: 8pt; color: var(--ink-light); line-height: 1.7; }
+
+    /* 雙欄 */
+    .grid { display: grid; grid-template-columns: 1fr 58mm; gap: 0 9mm; }
+
+    h2 { font-size: 9pt; font-weight: 700; letter-spacing: 0.3em; border-bottom: 1px solid var(--ink); padding-bottom: 0.25rem; margin: 0.9rem 0 0.7rem; }
+
+    /* 主欄：經歷 / 專案 */
+    .job, .project { margin-bottom: 0.85rem; break-inside: avoid; }
+    .job-head { display: flex; justify-content: space-between; align-items: baseline; }
+    .job-head b { font-size: 10.5pt; font-weight: 700; }
+    .job-head span { font-size: 8pt; color: var(--ink-light); font-variant-numeric: tabular-nums; }
+    .job .org { font-size: 8.5pt; color: var(--ink-light); margin-bottom: 0.25rem; }
+    .job ul, .project ul { list-style: none; }
+    .job li, .project li { padding-left: 1em; position: relative; margin-bottom: 0.15rem; }
+    .job li::before, .project li::before { content: "—"; position: absolute; left: 0; color: var(--ink-light); }
+
+    /* 窄欄 */
+    aside { font-size: 8.5pt; }
+    aside .group { margin-bottom: 0.55rem; }
+    aside .group b { display: block; font-weight: 500; }
+    aside .group span { color: var(--ink-light); }
+    aside p { margin-bottom: 0.35rem; }
+    .summary { font-size: 9pt; text-align: justify; color: var(--ink); }
+  </style>
+</head>
+<body>
+
+  <header class="id">
+    <div>
+      <h1>陳柏睿</h1>
+      <p class="role">後端工程師 · 分散式系統</p>
+    </div>
+    <div class="contact">
+      0912-345-678 · porui.chen@example.com<br>
+      github.com/poruichen<br>
+      台北市
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <main>
+      <h2>工作經歷</h2>
+
+      <div class="job">
+        <div class="job-head"><b>資深後端工程師</b><span>2023.04 — 現在</span></div>
+        <p class="org">雲遞科技股份有限公司 · 物流 SaaS</p>
+        <ul>
+          <li>主導訂單服務由單體拆分為事件驅動架構，尖峰承載由 300 提升至 1,200 RPS。</li>
+          <li>建立效能基準自動比對流程，效能回歸缺陷於合併前攔截率達九成。</li>
+          <li>帶領三人小組完成資料庫零停機遷移，影響範圍涵蓋 240 萬筆活躍訂單。</li>
+        </ul>
+      </div>
+
+      <div class="job">
+        <div class="job-head"><b>後端工程師</b><span>2020.09 — 2023.03</span></div>
+        <p class="org">捷思資訊有限公司 · 電商系統開發</p>
+        <ul>
+          <li>開發庫存與促銷引擎，支撐雙十一活動單日 180 萬筆交易無事故。</li>
+          <li>將部署流程由手動腳本改為 CI/CD 流水線，發布時間由 2 小時縮短至 15 分鐘。</li>
+        </ul>
+      </div>
+
+      <h2>代表專案</h2>
+
+      <div class="project">
+        <div class="job-head"><b>開源專案：rate-gate</b><span>維護者</span></div>
+        <ul>
+          <li>Go 語言分散式限流函式庫，支援滑動視窗與令牌桶演算法，GitHub 1.4k stars。</li>
+          <li>被三家企業用於生產環境，維護 30 餘位貢獻者的社群協作。</li>
+        </ul>
+      </div>
+    </main>
+
+    <aside>
+      <h2>簡介</h2>
+      <p class="summary">六年後端開發經驗，專注高流量交易系統的可靠性與效能。擅長從量測出發定位瓶頸，以最小改動取得可驗證的改善。</p>
+
+      <h2>技能</h2>
+      <div class="group"><b>語言</b><span>Go、Python、SQL</span></div>
+      <div class="group"><b>系統</b><span>PostgreSQL、Redis、Kafka、Kubernetes</span></div>
+      <div class="group"><b>方法</b><span>領域驅動設計、壓測與容量規劃、可觀測性建置</span></div>
+
+      <h2>學歷</h2>
+      <div class="group"><b>國立成功大學</b><span>資訊工程學系 學士 · 2016 — 2020</span></div>
+
+      <h2>語言</h2>
+      <div class="group"><span>中文（母語）· 英文（流利，TOEIC 905）</span></div>
+    </aside>
+
+  </div>
+
+</body>
+</html>

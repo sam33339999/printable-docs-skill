@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  handover-a4.html — 到職／離職交接清單 template（A4 直式）
+  ═══════════════════════════════════════════════════════════
+  用途：到職開通或離職交接的逐項確認清單，以 Cmd+P 匯出 PDF
+  後逐項簽認。結構為：類型勾選、人員資訊、分區清單（帳號權限、
+  設備、文件與工作交接）、完成確認簽核。
+
+  手動使用：勾選 .type 類型（到職用「開通」欄位語意、離職用
+  「收回」）；清單列（tbody tr）依公司實際系統增刪。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 每一列都要有負責單位；「確認」欄留空白由經辦人手寫日期與簽名
+  3. 離職交接必須包含：工作事項交接表、帳號停用、設備收回三區
+  4. 禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>離職交接清單</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 16mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.65;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.8rem; margin-bottom: 0.9rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 16pt; font-weight: 700; letter-spacing: 0.2em; }
+    .type { display: flex; gap: 0.8rem; font-size: 9.5pt; }
+    .type div { border: 1px solid var(--ink); padding: 0.15rem 1rem; letter-spacing: 0.2em; }
+    .type .checked { background: var(--ink); color: #fff; font-weight: 700; }
+
+    /* 人員資訊 */
+    .person { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.3rem 1.5rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.7rem; margin-bottom: 1.2rem; font-size: 9.5pt; }
+    .person span { color: var(--ink-light); font-size: 8pt; display: block; }
+
+    /* 區塊 */
+    section { margin-bottom: 1.3rem; }
+    h2 {
+      font-size: 10pt; font-weight: 700; letter-spacing: 0.25em;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* 清單表 */
+    table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.3rem 0.5rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.35rem 0.5rem; vertical-align: top; }
+    td small { color: var(--ink-light); font-size: 8pt; display: block; }
+    .center { text-align: center; }
+    .confirm { border-left: 1px solid var(--rule); }
+
+    /* 完成確認 */
+    .signoff { display: flex; gap: 2.5rem; margin-top: 1.6rem; }
+    .signoff div { flex: 1; border-top: 1px solid var(--ink); padding-top: 0.35rem; font-size: 8.5pt; color: var(--ink-light); }
+
+    .doc-footer { margin-top: 1.4rem; padding-top: 0.5rem; border-top: 1px solid var(--rule); font-size: 7.5pt; color: var(--ink-light); text-align: center; }
+
+    section, table, .signoff { break-inside: avoid; }
+    h2 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>人員交接清單</h1>
+    <div class="type">
+      <div>到　職</div>
+      <div class="checked">離　職</div>
+    </div>
+  </header>
+
+  <div class="person">
+    <div><span>姓名</span>吳孟哲</div>
+    <div><span>部門／職稱</span>產品部 產品經理</div>
+    <div><span>最後工作日</span>2026-06-30</div>
+    <div><span>交接對象</span>許芳瑜</div>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>一、工作事項交接</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:5%">#</th>
+            <th>交接事項</th>
+            <th style="width:16%">接手人</th>
+            <th class="center confirm" style="width:20%">確認（簽名／日期）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>會員系統重構案 PM 職務<small>含需求清單、供應商窗口、會議主持</small></td><td>許芳瑜</td><td class="confirm"></td></tr>
+          <tr><td>2</td><td>第三季 roadmap 草案與利害關係人名單</td><td>許芳瑜</td><td class="confirm"></td></tr>
+          <tr><td>3</td><td>進行中需求單 12 張之狀態說明文件</td><td>許芳瑜</td><td class="confirm"></td></tr>
+          <tr><td>4</td><td>共用文件目錄擁有權移轉</td><td>許芳瑜</td><td class="confirm"></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>二、帳號與系統權限（離職：停用／到職：開通）</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:5%">#</th>
+            <th>系統</th>
+            <th style="width:16%">負責單位</th>
+            <th class="center confirm" style="width:20%">確認（簽名／日期）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>公司信箱與行事曆<small>離職者信箱設定轉寄至主管，保留三個月</small></td><td>資訊部</td><td class="confirm"></td></tr>
+          <tr><td>2</td><td>單一登入（SSO）與 VPN</td><td>資訊部</td><td class="confirm"></td></tr>
+          <tr><td>3</td><td>專案管理與文件協作平台</td><td>資訊部</td><td class="confirm"></td></tr>
+          <tr><td>4</td><td>正式環境後台帳號</td><td>資訊部</td><td class="confirm"></td></tr>
+          <tr><td>5</td><td>門禁卡與打卡系統</td><td>總務</td><td class="confirm"></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>三、設備（離職：收回／到職：發放）</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:5%">#</th>
+            <th>設備</th>
+            <th style="width:22%">財產編號</th>
+            <th style="width:16%">負責單位</th>
+            <th class="center confirm" style="width:20%">確認（簽名／日期）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>筆記型電腦 MacBook Pro 14"</td><td>IT-NB-2024-031</td><td>資訊部</td><td class="confirm"></td></tr>
+          <tr><td>2</td><td>外接螢幕 27"</td><td>IT-MN-2023-118</td><td>資訊部</td><td class="confirm"></td></tr>
+          <tr><td>3</td><td>公務手機門號</td><td>—</td><td>總務</td><td class="confirm"></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <div class="signoff">
+    <div>當事人簽名及日期</div>
+    <div>直屬主管確認</div>
+    <div>資訊部確認</div>
+    <div>人資結案</div>
+  </div>
+
+  <footer class="doc-footer">
+    全部項目確認完成並經四方簽核後，本清單由人資部歸檔；離職案件未完成交接者依離職管理辦法處理。
+  </footer>
+
+</body>
+</html>

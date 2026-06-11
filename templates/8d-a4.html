@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  8d-a4.html — 8D 問題改善報告 template（A4 直式，多頁）
+  ═══════════════════════════════════════════════════════════
+  用途：8D（Eight Disciplines）問題解決報告，客訴或重大品質
+  異常的標準回覆文件，以 Cmd+P 匯出 PDF。結構為：問題摘要欄、
+  D1 成立團隊、D2 問題描述（5W2H）、D3 暫時圍堵措施、
+  D4 根因分析（發生根因＋流出根因）、D5 永久對策、
+  D6 效果驗證、D7 預防再發與水平展開、D8 結案。
+  （軟體事故的內部檢討用 postmortem-a4.html；本表用於
+  須正式回覆客戶或稽核的品質問題。）
+
+  手動使用：替換摘要欄與各 section；表格列（tbody tr）照樣式
+  增刪；非客訴案件可將「客戶」欄改為「發現單位」。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. D4 根因必須分「發生根因」（為什麼會發生）與「流出根因」
+     （為什麼沒被攔下）兩條線各自追問到流程層級，缺一不可
+  3. D3 圍堵措施要有實施日期與有效性確認；D6 效果驗證要用
+     數據（前後對比），不可寫「已改善」了事
+  4. D5 對策不得只有「加強教育訓練」「要求注意」這類人員對策，
+     至少一項須為流程或系統的防錯改變；D7 必須寫水平展開
+     （同類產品／製程是否有相同風險）
+  5. 禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>8D 問題改善報告 8D-2026-003</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #8a2a1a;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 18mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.7;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 17pt; font-weight: 700; line-height: 1.45; }
+    .doc-header h1 small { display: block; font-size: 8.5pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.3em; }
+    .status { border: 2px solid var(--accent); color: var(--accent); font-size: 10.5pt; font-weight: 700; letter-spacing: 0.15em; padding: 0.15rem 0.9rem; white-space: nowrap; }
+
+    /* 摘要欄 */
+    .facts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.2rem 2rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.8rem; margin-bottom: 1.6rem; font-size: 9.5pt; }
+    .facts span { color: var(--ink-light); font-size: 8pt; display: block; }
+    .facts b { font-weight: 500; font-variant-numeric: tabular-nums; }
+
+    /* 章節 */
+    section { margin-bottom: 1.8rem; }
+    h2 {
+      font-size: 12pt; font-weight: 700;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.7rem;
+    }
+    h2 small { font-weight: 400; font-size: 8.5pt; color: var(--ink-light); margin-left: 0.6em; letter-spacing: 0.1em; }
+    h3 { font-size: 10.5pt; font-weight: 700; margin: 0.9rem 0 0.4rem; }
+    p { margin-bottom: 0.6rem; text-align: justify; }
+    ul, ol { padding-left: 1.6rem; margin-bottom: 0.6rem; }
+
+    /* 表格 */
+    table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.4rem 0.55rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.4rem 0.55rem; vertical-align: top; }
+    td small { color: var(--ink-light); font-size: 8pt; display: block; }
+    .center { text-align: center; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .label { width: 16%; color: var(--ink-light); font-size: 8.5pt; letter-spacing: 0.1em; white-space: nowrap; }
+
+    /* 5-Why 鏈 */
+    .why { list-style: none; padding-left: 0; margin: 0.4rem 0 0.8rem; }
+    .why li { display: flex; gap: 0.7em; margin-bottom: 0.25rem; }
+    .why b { color: var(--accent); font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .why .root { font-weight: 500; }
+
+    /* 重點框 */
+    .note { border: 1px solid var(--ink); padding: 0.7rem 1rem; margin: 0.8rem 0; font-size: 9.5pt; }
+    .note > b:first-child { display: block; font-size: 8.5pt; letter-spacing: 0.25em; color: var(--accent); margin-bottom: 0.25rem; }
+
+    /* 簽核欄 */
+    .signoff { display: flex; gap: 2.5rem; margin-top: 1.6rem; }
+    .signoff div { flex: 1; border-top: 1px solid var(--ink); padding-top: 0.3rem; margin-top: 12mm; font-size: 8pt; color: var(--ink-light); letter-spacing: 0.15em; }
+
+    /* 文件尾 */
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 1.8rem; padding-top: 0.5rem; font-size: 8pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    /* 分頁控制 */
+    table, .note, .signoff { break-inside: avoid; }
+    h2, h3 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>
+      <small>8D 問題改善報告 · 8D-2026-003</small>
+      數據採集模組夜班時段數據漏報
+    </h1>
+    <div class="status">結案</div>
+  </header>
+
+  <div class="facts">
+    <div><span>問題來源</span><b>客訴（鼎勝精密工業）</b></div>
+    <div><span>受理日期</span><b>2026-04-14</b></div>
+    <div><span>產品／模組</span><b>GENYU 採集模組 GW-200 韌體 v3.2</b></div>
+    <div><span>嚴重度</span><b>重大（影響客戶月報）</b></div>
+    <div><span>組長</span><b>品保部 吳啟維</b></div>
+    <div><span>結案日期</span><b>2026-06-11</b></div>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>D1 成立團隊</h2>
+      <table>
+        <thead>
+          <tr><th style="width:18%">角色</th><th style="width:18%">姓名</th><th style="width:20%">部門</th><th>分工</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>組長</td><td>吳啟維</td><td>品保部</td><td>進度管理、客戶窗口、結案判定</td></tr>
+          <tr><td>技術主導</td><td>陳柏宇</td><td>韌體開發組</td><td>根因分析、韌體修正</td></tr>
+          <tr><td>組員</td><td>張惟誠</td><td>客戶成功組</td><td>受影響客戶清查、補數協調</td></tr>
+          <tr><td>組員</td><td>李宥蓁</td><td>測試組</td><td>重現驗證、測試規範修訂</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>D2 問題描述<small>5W2H</small></h2>
+      <table>
+        <tbody>
+          <tr><td class="label">What 何事</td><td>客戶月報中夜班（23:00–07:00）設備稼動率數據缺漏，缺漏時段顯示為停機。</td></tr>
+          <tr><td class="label">Where 何處</td><td>鼎勝精密二廠 CNC 區 6 台設備，均經同一台 GW-200 採集模組接入。</td></tr>
+          <tr><td class="label">When 何時</td><td>2026-03-28 起間歇發生，04-14 客戶核對月報時發現提出客訴。</td></tr>
+          <tr><td class="label">Who 何人</td><td>客戶廠務經理發現；我方監控未告警（見流出根因）。</td></tr>
+          <tr><td class="label">Why 為何重要</td><td>稼動率為客戶申請補助之佐證數據，缺漏使月報不可用。</td></tr>
+          <tr><td class="label">How 如何發生</td><td>控制器於夜間例行重啟後，模組重連成功但停止回傳數據。</td></tr>
+          <tr><td class="label">How many 多少</td><td>受影響 3 家客戶、共 14 台設備；缺漏時數合計 217 小時。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>D3 暫時圍堵措施</h2>
+      <table>
+        <thead>
+          <tr><th>措施</th><th style="width:14%" class="center">實施日</th><th style="width:14%">負責人</th><th style="width:24%">有效性確認</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>全客戶掃描漏報特徵（重連後零流量），清查出 3 家受影響客戶並主動通知。</td><td class="center">2026-04-15</td><td>張惟誠</td><td>清查清單經客戶確認無遺漏</td></tr>
+          <tr><td>缺漏時段以控制器本機日誌回補，受影響月報全數重出。</td><td class="center">2026-04-22</td><td>張惟誠</td><td>客戶核對回補數據無誤</td></tr>
+          <tr><td>監控端緊急加入「連線正常但 30 分鐘零數據」告警，攔截再發。</td><td class="center">2026-04-16</td><td>陳柏宇</td><td>圍堵期間攔截 2 次，均 30 分鐘內恢復</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>D4 根因分析</h2>
+      <h3>發生根因（為什麼會發生）</h3>
+      <ol class="why">
+        <li><b>Why 1</b><span>控制器夜間重啟後，模組顯示連線正常但無數據回傳。</span></li>
+        <li><b>Why 2</b><span>重連流程只重建 TCP 連線，未重新發送資料訂閱請求。</span></li>
+        <li><b>Why 3</b><span>丙廠牌控制器韌體 7.x 重啟後會清除既有訂閱，與舊版（保留訂閱）行為不同。</span></li>
+        <li><b>Why 4</b><span>協定庫開發時以舊版控制器驗證，廠牌韌體改版未納入追蹤。</span></li>
+        <li class="root"><b>Why 5</b><span>缺少「控制器廠牌韌體版本相容性追蹤」流程——廠牌改版時無人觸發回歸驗證。</span></li>
+      </ol>
+      <h3>流出根因（為什麼沒被攔下）</h3>
+      <ol class="why">
+        <li><b>Why 1</b><span>出貨測試與既有監控均未發現此缺陷。</span></li>
+        <li><b>Why 2</b><span>出貨測試僅驗證「連線成功、首批數據正確」，無斷線重連後的資料持續性情境。</span></li>
+        <li class="root"><b>Why 3</b><span>測試規範以功能清單組織，缺少「異常恢復」類別——重連、斷電、時鐘跳動等情境從未納入。</span></li>
+      </ol>
+      <div class="note">
+        <b>根因結論</b>
+        發生面：廠牌韌體相容性無追蹤流程；流出面：測試規範缺少異常恢復類別。兩者皆為流程缺口，對策須落在流程而非個人。
+      </div>
+    </section>
+
+    <section>
+      <h2>D5 永久對策</h2>
+      <table>
+        <thead>
+          <tr><th style="width:6%">#</th><th>對策</th><th style="width:14%">負責人</th><th style="width:14%" class="center">完成日</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>韌體 v3.3：重連後一律重新訂閱，並加入資料心跳檢測（60 秒無數據即重建會話）。<small>防錯設計：不依賴控制器行為假設</small></td><td>陳柏宇</td><td class="center">2026-05-09</td></tr>
+          <tr><td>2</td><td>建立控制器廠牌韌體版本追蹤表，廠牌發布新版即觸發相容性回歸驗證。</td><td>韌體開發組</td><td class="center">2026-05-23</td></tr>
+          <tr><td>3</td><td>出貨測試規範新增「異常恢復」類別：斷線重連、控制器重啟、斷電復電三情境列為必測。</td><td>李宥蓁</td><td class="center">2026-05-30</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>D6 效果驗證</h2>
+      <table>
+        <thead>
+          <tr><th>指標</th><th class="num" style="width:20%">對策前</th><th class="num" style="width:20%">對策後（30 天觀察）</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>重連後漏報事件（全客戶）</td><td class="num">間歇發生，3 月達 11 次</td><td class="num">0 次</td></tr>
+          <tr><td>零數據告警觸發後自動恢復率</td><td class="num">—（無此機制）</td><td class="num">100%（心跳重建會話）</td></tr>
+          <tr><td>實驗室重現測試（控制器重啟 50 次）</td><td class="num">漏報 50/50</td><td class="num">漏報 0/50</td></tr>
+        </tbody>
+      </table>
+      <p>v3.3 韌體於 5 月 12 日完成全客戶推送，觀察期 30 天（05-12 至 06-10）無再發；客戶於 6 月月報核對後確認結案。</p>
+    </section>
+
+    <section>
+      <h2>D7 預防再發與水平展開</h2>
+      <ul>
+        <li>水平展開：清查另兩個支援廠牌之驅動，甲廠牌存在同型風險（重連未重訂閱但尚未觸發），已於 v3.3 一併預防性修正；乙廠牌協定無訂閱機制，不適用。</li>
+        <li>測試規範 QP-07 改版 v4.0，新增異常恢復類別；歷史機種回歸排程至第三季完成。</li>
+        <li>客戶月報產出前加入數據完整度檢核（缺漏時數超過 1% 即標示），由系統防呆取代人工核對。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>D8 結案</h2>
+      <p>本案經 D6 驗證無再發、D7 水平展開完成，於 2026-06-11 品質會議決議結案。感謝小組成員於圍堵期間兩週內完成全客戶清查與補數，將客戶影響控制在單一月報週期內。</p>
+      <div class="signoff">
+        <div>組長</div>
+        <div>品保主管</div>
+        <div>核定</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="doc-footer">
+    <span>數據採集模組夜班時段數據漏報 · 8D-2026-003</span>
+    <span>機密等級：內部使用 · 客戶版另行節錄</span>
+  </footer>
+
+</body>
+</html>

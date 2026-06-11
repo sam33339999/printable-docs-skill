@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  uat-a4.html — 驗收測試報告 template（A4 直式）
+  ═══════════════════════════════════════════════════════════
+  用途：使用者驗收測試（UAT）報告，以 Cmd+P 匯出 PDF 後由
+  甲乙雙方簽署。結構為：專案資訊欄、驗收摘要、測試結果明細、
+  缺陷清單、驗收結論、雙方簽署欄。
+  與 spec-a4.html（需求規格書）成對使用：「對應需求」欄填
+  規格書的 FR／NFR 編號。
+
+  手動使用：替換 .facts 與各表格列（tbody tr）；測試項目
+  編號 UAT-01 依序遞增，缺陷編號 DEF-01 依序遞增。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 測試結果僅限三種：通過／有條件通過／不通過；「有條件通過」
+     與「不通過」的項目必須對應缺陷清單中的缺陷編號
+  3. 驗收摘要的統計數字（項目數、通過率）必須與明細表逐筆加總一致
+  4. 驗收結論要寫明保留條件（哪些缺陷、修復期限、由誰複測），
+     不可只寫「驗收通過」四個字；簽署欄保留
+  5. 禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>驗收測試報告 UAT-2026-011</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 18mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.7;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 17pt; font-weight: 700; line-height: 1.45; }
+    .doc-header h1 small { display: block; font-size: 8.5pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.3em; }
+    .verdict { border: 2px solid var(--accent); color: var(--accent); font-size: 10.5pt; font-weight: 700; letter-spacing: 0.12em; padding: 0.15rem 0.9rem; white-space: nowrap; }
+
+    /* 專案資訊欄 */
+    .facts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.2rem 2rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.8rem; margin-bottom: 1.6rem; font-size: 9.5pt; }
+    .facts span { color: var(--ink-light); font-size: 8pt; display: block; }
+    .facts b { font-weight: 500; font-variant-numeric: tabular-nums; }
+
+    /* 章節 */
+    section { margin-bottom: 1.8rem; }
+    h2 {
+      font-size: 12pt; font-weight: 700;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.7rem;
+    }
+    p { margin-bottom: 0.6rem; text-align: justify; }
+    ul, ol { padding-left: 1.6rem; margin-bottom: 0.6rem; }
+
+    /* 表格 */
+    table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.4rem 0.5rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.4rem 0.5rem; vertical-align: top; }
+    td small { color: var(--ink-light); font-size: 8pt; display: block; }
+    .center { text-align: center; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .req-id { font-variant-numeric: tabular-nums; color: var(--accent); font-weight: 500; white-space: nowrap; }
+    .r-pass { white-space: nowrap; }
+    .r-cond { white-space: nowrap; font-weight: 500; }
+    .r-fail { white-space: nowrap; font-weight: 700; }
+
+    /* 摘要統計 */
+    .summary { display: grid; grid-template-columns: repeat(5, 1fr); border: 2px solid var(--ink); margin-bottom: 0.8rem; }
+    .summary div { padding: 0.45rem 0.7rem; border-right: 1px solid var(--rule); }
+    .summary div:last-child { border-right: none; }
+    .summary span { display: block; font-size: 8pt; color: var(--ink-light); letter-spacing: 0.1em; }
+    .summary b { font-size: 14pt; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    /* 重點框 */
+    .note { border: 1px solid var(--ink); padding: 0.7rem 1rem; margin: 0.8rem 0; font-size: 9.5pt; }
+    .note > b:first-child { display: block; font-size: 8.5pt; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 0.25rem; }
+
+    /* 簽署欄 */
+    .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
+    .signatures > div { border: 1px solid var(--ink); padding: 0.6rem 0.9rem 0; }
+    .signatures h3 { font-size: 8.5pt; font-weight: 700; letter-spacing: 0.25em; margin-bottom: 0.3rem; }
+    .signatures .sig-org { font-size: 9.5pt; margin-bottom: 1rem; }
+    .signatures .sig-line { display: flex; gap: 1.2rem; margin-bottom: 0.7rem; }
+    .signatures .sig-line div { flex: 1; border-top: 1px solid var(--ink); padding-top: 0.2rem; margin-top: 14mm; font-size: 8pt; color: var(--ink-light); letter-spacing: 0.15em; }
+
+    /* 文件尾 */
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 1.8rem; padding-top: 0.5rem; font-size: 8pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    /* 分頁控制 */
+    table, .note, .summary, .signatures { break-inside: avoid; }
+    h2 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>
+      <small>驗收測試報告 · UAT-2026-011</small>
+      訂單匯出與對帳功能驗收測試報告
+    </h1>
+    <div class="verdict">有條件通過</div>
+  </header>
+
+  <div class="facts">
+    <div><span>專案名稱</span><b>訂單匯出與對帳功能開發案</b></div>
+    <div><span>合約／SOW 編號</span><b>SOW-2026-007</b></div>
+    <div><span>依據文件</span><b>SPEC-2026-011 v1.3</b></div>
+    <div><span>測試期間</span><b>2026-06-02 至 2026-06-10</b></div>
+    <div><span>測試環境</span><b>UAT 環境（與正式同規格）</b></div>
+    <div><span>報告日期</span><b>2026-06-11</b></div>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>1. 驗收摘要</h2>
+      <div class="summary">
+        <div><span>測試項目</span><b>12</b></div>
+        <div><span>通過</span><b>10</b></div>
+        <div><span>有條件通過</span><b>1</b></div>
+        <div><span>不通過</span><b>1</b></div>
+        <div><span>通過率</span><b>83.3%</b></div>
+      </div>
+      <p>十二項驗收測試中十項通過。UAT-04（匯出檔保留期清除）因排程時區設定誤差列為有條件通過；UAT-07（差異分類正確性）因金額不符案件誤判列為不通過，須修復後複測。下單、匯出主流程功能與全部效能指標均達規格書要求。</p>
+    </section>
+
+    <section>
+      <h2>2. 測試結果明細</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:10%">編號</th>
+            <th>測試項目</th>
+            <th style="width:13%">對應需求</th>
+            <th style="width:12%" class="center">結果</th>
+            <th style="width:24%">備註</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="req-id">UAT-01</td><td>匯出檔欄位完整性與後台一致性</td><td class="req-id">FR-01</td><td class="center r-pass">通過</td><td>—</td></tr>
+          <tr><td class="req-id">UAT-02</td><td>30 萬筆非同步匯出筆數與效能</td><td class="req-id">FR-01／NFR-01</td><td class="center r-pass">通過</td><td>實測 7 分 42 秒，達標</td></tr>
+          <tr><td class="req-id">UAT-03</td><td>任務中心進度顯示與完成通知</td><td class="req-id">FR-02</td><td class="center r-pass">通過</td><td>—</td></tr>
+          <tr><td class="req-id">UAT-04</td><td>匯出檔保留 7 天自動清除</td><td class="req-id">FR-02</td><td class="center r-cond">有條件通過</td><td>DEF-02：清除時間偏移 8 小時</td></tr>
+          <tr><td class="req-id">UAT-05</td><td>甲、乙銀行對帳檔正確匯入</td><td class="req-id">FR-03</td><td class="center r-pass">通過</td><td>—</td></tr>
+          <tr><td class="req-id">UAT-06</td><td>格式錯誤與重複匯入防呆</td><td class="req-id">FR-03</td><td class="center r-pass">通過</td><td>錯誤訊息標明行號</td></tr>
+          <tr><td class="req-id">UAT-07</td><td>差異案件三類分類正確性</td><td class="req-id">FR-04</td><td class="center r-fail">不通過</td><td>DEF-01：金額不符誤判為查無訂單</td></tr>
+          <tr><td class="req-id">UAT-08</td><td>差異報告匯出與筆數一致性</td><td class="req-id">FR-04</td><td class="center r-pass">通過</td><td>—</td></tr>
+          <tr><td class="req-id">UAT-09</td><td>對帳結果簽核與帳務鎖定</td><td class="req-id">FR-05</td><td class="center r-pass">通過</td><td>退回理由必填驗證通過</td></tr>
+          <tr><td class="req-id">UAT-10</td><td>權限控管與個資欄位遮罩</td><td class="req-id">NFR-03</td><td class="center r-pass">通過</td><td>非財務角色存取被拒</td></tr>
+          <tr><td class="req-id">UAT-11</td><td>操作稽核軌跡完整性</td><td class="req-id">NFR-04</td><td class="center r-pass">通過</td><td>抽查 20 筆皆有紀錄</td></tr>
+          <tr><td class="req-id">UAT-12</td><td>排程自動對帳與取檔失敗告警</td><td class="req-id">FR-06</td><td class="center r-pass">通過</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>3. 缺陷清單</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:10%">編號</th>
+            <th style="width:10%" class="center">嚴重度</th>
+            <th>缺陷描述</th>
+            <th style="width:26%">處理約定</th>
+            <th style="width:10%" class="center">狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="req-id">DEF-01</td>
+            <td class="center r-fail">高</td>
+            <td>入帳金額與訂單金額不符時，差異案件被誤分類為「查無訂單」，影響財務判讀。<small>對應 UAT-07</small></td>
+            <td>2026-06-25 前修復；修復後由甲方財務部複測 UAT-07。</td>
+            <td class="center">修復中</td>
+          </tr>
+          <tr>
+            <td class="req-id">DEF-02</td>
+            <td class="center">中</td>
+            <td>匯出檔清除排程以 UTC 執行，實際清除時間較約定晚 8 小時。<small>對應 UAT-04</small></td>
+            <td>上線後一個月內（2026-07-31 前）修復，不影響驗收。</td>
+            <td class="center">已排程</td>
+          </tr>
+          <tr>
+            <td class="req-id">DEF-03</td>
+            <td class="center">低</td>
+            <td>任務中心完成通知郵件主旨未含任務名稱。</td>
+            <td>測試期間已修復，2026-06-09 複測通過。</td>
+            <td class="center">已結案</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>4. 驗收結論</h2>
+      <div class="note">
+        <b>結論</b>
+        本案驗收結果為「有條件通過」：除 DEF-01 對應之差異分類功能外，其餘功能與效能均符合 SPEC-2026-011 v1.3 之驗收標準，同意先行上線。乙方應於 2026-06-25 前完成 DEF-01 修復，由甲方財務部複測 UAT-07 通過後，本案視為驗收完成；DEF-02 列入上線後保固處理，不影響驗收成立。
+      </div>
+      <ul>
+        <li>保固期依合約自驗收完成日起算十二個月。</li>
+        <li>複測結果以電子郵件確認後附於本報告，作為驗收完成之佐證文件。</li>
+      </ul>
+    </section>
+
+    <div class="signatures">
+      <div>
+        <h3>甲方（驗收方）</h3>
+        <div class="sig-org">亙宇數位股份有限公司</div>
+        <div class="sig-line">
+          <div>驗收代表簽章</div>
+          <div>日期</div>
+        </div>
+      </div>
+      <div>
+        <h3>乙方（交付方）</h3>
+        <div class="sig-org">承嶧資訊有限公司</div>
+        <div class="sig-line">
+          <div>交付代表簽章</div>
+          <div>日期</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="doc-footer">
+    <span>訂單匯出與對帳功能驗收測試報告 · UAT-2026-011</span>
+    <span>本報告一式兩份，甲乙雙方各執一份</span>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,1006 @@
+[
+ {
+  "name": "chart-bar",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "chart-bar-plain-text",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "chart-column",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "chart-column-simple",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "chart-line",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "chart-line-plain-text",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "chart-pie",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "chart-pie-compact-card",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "chart-pie-donut-compact-card",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "chart-pie-donut-pill-badge",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "chart-pie-donut-plain-text",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "chart-pie-pill-badge",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "chart-pie-plain-text",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "chart-wordcloud",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "chart-wordcloud-rotate",
+  "category": "chart",
+  "tested": true,
+  "data_shape": "label+value"
+ },
+ {
+  "name": "compare-binary-horizontal",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "children(label+desc)",
+  "note": "頂層 label 不顯示，內容寫在 children（label+desc）"
+ },
+ {
+  "name": "compare-binary-horizontal-badge-card-arrow",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "children(label+desc)",
+  "note": "頂層 label 不顯示，內容寫在 children（label+desc）"
+ },
+ {
+  "name": "compare-binary-horizontal-badge-card-fold",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "children(label+desc)",
+  "note": "頂層 label 不顯示，內容寫在 children（label+desc）"
+ },
+ {
+  "name": "compare-binary-horizontal-badge-card-vs",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "children(label+desc)",
+  "note": "頂層 label 不顯示，內容寫在 children（label+desc）"
+ },
+ {
+  "name": "compare-binary-horizontal-compact-card-arrow",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "children(label+desc)",
+  "note": "頂層 label 不顯示，內容寫在 children（label+desc）"
+ },
+ {
+  "name": "compare-binary-horizontal-compact-card-fold",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "children(label+desc)",
+  "note": "頂層 label 不顯示，內容寫在 children（label+desc）"
+ },
+ {
+  "name": "compare-binary-horizontal-compact-card-vs",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "children(label+desc)",
+  "note": "頂層 label 不顯示，內容寫在 children（label+desc）"
+ },
+ {
+  "name": "compare-binary-horizontal-simple-arrow",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "children(label+desc)",
+  "note": "頂層 label 不顯示，內容寫在 children（label+desc）"
+ },
+ {
+  "name": "compare-binary-horizontal-simple-fold",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "children(label+desc)",
+  "note": "頂層 label 不顯示，內容寫在 children（label+desc）"
+ },
+ {
+  "name": "compare-binary-horizontal-simple-vs",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "children(label+desc)",
+  "note": "頂層 label 不顯示，內容寫在 children（label+desc）"
+ },
+ {
+  "name": "compare-binary-horizontal-underline-text-arrow",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "children(label+desc)",
+  "note": "頂層 label 不顯示，內容寫在 children（label+desc）"
+ },
+ {
+  "name": "compare-binary-horizontal-underline-text-fold",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "children(label+desc)",
+  "note": "頂層 label 不顯示，內容寫在 children（label+desc）"
+ },
+ {
+  "name": "compare-binary-horizontal-underline-text-vs",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "children(label+desc)",
+  "note": "頂層 label 不顯示，內容寫在 children（label+desc）"
+ },
+ {
+  "name": "compare-hierarchy-left-right",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "label+children",
+  "note": "實測僅根節點顯示，children 未渲染，建議改用 hierarchy-structure-mirror"
+ },
+ {
+  "name": "compare-hierarchy-left-right-circle-node-pill-badge",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "compare-hierarchy-left-right-circle-node-plain-text",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "compare-hierarchy-row",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "compare-hierarchy-row-letter-card-compact-card",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "compare-hierarchy-row-letter-card-rounded-rect-node",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "compare-quadrant",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "compare-quadrant-quarter-circular",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "compare-quadrant-quarter-simple-card",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "compare-quadrant-simple-illus",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "compare-swot",
+  "category": "compare",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "hierarchy-mindmap",
+  "category": "hierarchy",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "hierarchy-mindmap-branch-gradient-capsule-item",
+  "category": "hierarchy",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "hierarchy-mindmap-branch-gradient-circle-progress",
+  "category": "hierarchy",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "hierarchy-mindmap-branch-gradient-compact-card",
+  "category": "hierarchy",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "hierarchy-mindmap-branch-gradient-lined-palette",
+  "category": "hierarchy",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "hierarchy-mindmap-branch-gradient-rounded-rect",
+  "category": "hierarchy",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "hierarchy-mindmap-level-gradient-capsule-item",
+  "category": "hierarchy",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "hierarchy-mindmap-level-gradient-circle-progress",
+  "category": "hierarchy",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "hierarchy-mindmap-level-gradient-compact-card",
+  "category": "hierarchy",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "hierarchy-mindmap-level-gradient-lined-palette",
+  "category": "hierarchy",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "hierarchy-mindmap-level-gradient-rounded-rect",
+  "category": "hierarchy",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "hierarchy-structure",
+  "category": "hierarchy",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "hierarchy-structure-mirror",
+  "category": "hierarchy",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "hierarchy-tree",
+  "category": "hierarchy",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "list-column",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-column-done-list",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-column-simple-vertical-arrow",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-column-vertical-icon-arrow",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-grid",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-grid-badge-card",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-grid-candy-card-lite",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-grid-circular-progress",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-grid-compact-card",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-grid-done-list",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-grid-horizontal-icon-arrow",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-grid-progress-card",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-grid-ribbon-card",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-grid-simple",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-pyramid",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-pyramid-badge-card",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-pyramid-compact-card",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-pyramid-rounded-rect-node",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-row",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-row-circular-progress",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-row-horizontal-icon-arrow",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-row-horizontal-icon-line",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-row-simple-horizontal-arrow",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-row-simple-illus",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-sector",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-sector-half-plain-text",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-sector-plain-text",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-sector-simple",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-waterfall",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-waterfall-badge-card",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-waterfall-compact-card",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-zigzag-down",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-zigzag-down-compact-card",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-zigzag-down-simple",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-zigzag-up",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-zigzag-up-compact-card",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "list-zigzag-up-simple",
+  "category": "list",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "relation-circle",
+  "category": "relation",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "relation-circle-circular-progress",
+  "category": "relation",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "relation-circle-icon-badge",
+  "category": "relation",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "relation-dagre-flow",
+  "category": "relation",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "relation-network",
+  "category": "relation",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "relation-network-icon-badge",
+  "category": "relation",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "relation-network-simple-circle-node",
+  "category": "relation",
+  "tested": true,
+  "data_shape": "label+children"
+ },
+ {
+  "name": "sequence-ascending-stairs-3d",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-ascending-stairs-3d-shadow-filter",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-ascending-stairs-3d-simple",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-ascending-stairs-3d-underline-text",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-ascending-steps",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-circle-arrows",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-circle-arrows-indexed-card",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-circular",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-circular-simple",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-circular-underline-text",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-color-snake-steps",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-color-snake-steps-horizontal-icon-line",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-color-snake-steps-simple-illus",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-cylinders-3d",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-cylinders-3d-simple",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-filter-mesh",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-filter-mesh-simple",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-filter-mesh-underline-text",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-funnel",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-funnel-simple",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-horizontal-zigzag",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-horizontal-zigzag-horizontal-icon-line",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-horizontal-zigzag-plain-text",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-horizontal-zigzag-simple",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-horizontal-zigzag-simple-horizontal-arrow",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-horizontal-zigzag-simple-illus",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-horizontal-zigzag-underline-text",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-interaction",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-mountain",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-mountain-underline-text",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-pyramid",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-pyramid-simple",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-roadmap-vertical",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-roadmap-vertical-badge-card",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-roadmap-vertical-pill-badge",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-roadmap-vertical-plain-text",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-roadmap-vertical-quarter-circular",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-roadmap-vertical-quarter-simple-card",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-roadmap-vertical-simple",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-roadmap-vertical-underline-text",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-snake-steps",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-snake-steps-compact-card",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-snake-steps-pill-badge",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-snake-steps-simple",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-snake-steps-simple-illus",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-snake-steps-underline-text",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-stairs-front",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-stairs-front-compact-card",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-stairs-front-pill-badge",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-stairs-front-simple",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-steps",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-steps-badge-card",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-steps-simple",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-steps-simple-illus",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-timeline",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-timeline-done-list",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-timeline-plain-text",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-timeline-rounded-rect-node",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-timeline-simple",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-timeline-simple-illus",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-zigzag-glow-filter",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-zigzag-pucks-3d",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-zigzag-pucks-3d-indexed-card",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-zigzag-pucks-3d-shadow-filter",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-zigzag-pucks-3d-simple",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-zigzag-pucks-3d-underline-text",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-zigzag-steps",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ },
+ {
+  "name": "sequence-zigzag-steps-underline-text",
+  "category": "sequence",
+  "tested": true,
+  "data_shape": "label+desc"
+ }
+]

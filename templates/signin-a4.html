@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  signin-a4.html — 簽到表 template（A4 直式，單頁手填）
+  ═══════════════════════════════════════════════════════════
+  用途：教育訓練、說明會、稽核會議等需要留存出席證明的場合，
+  列印後現場手寫簽到。結構為：活動資訊、簽到表格（留白列）、
+  統計與主辦簽名。
+
+  手動使用：替換 .event-info 活動資訊；預設 18 列留白，
+  人數多時複製本頁改頁碼即可（每頁皆有活動資訊，散頁不混淆）。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 簽到列保持留白供手寫，不要代填姓名；已知名單時可預填
+     「單位／姓名」兩欄，但「簽名」欄一律留白
+  3. 列高不得縮小（手寫需要空間）；一頁固定 18 列，超過則加頁
+  4. 禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>簽到表：資訊安全教育訓練</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 14mm 16mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.6;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.6rem; margin-bottom: 0.7rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 16pt; font-weight: 700; letter-spacing: 0.3em; }
+    .doc-header .page-no { font-size: 8.5pt; color: var(--ink-light); }
+
+    /* 活動資訊 */
+    .event-info { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0.2rem 1.5rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.6rem; margin-bottom: 1rem; font-size: 9.5pt; }
+    .event-info span { color: var(--ink-light); font-size: 8pt; display: block; }
+
+    /* 簽到表 */
+    table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.15em; border-bottom: 2px solid var(--ink); padding: 0.35rem 0.6rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0 0.6rem; height: 9.2mm; vertical-align: middle; }
+    .no { text-align: center; color: var(--ink-light); font-variant-numeric: tabular-nums; }
+    td.sig { border-left: 1px solid var(--rule); }
+
+    /* 統計與簽名 */
+    .tally { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0.9rem; font-size: 9.5pt; }
+    .tally .counts span { color: var(--ink-light); font-size: 8.5pt; margin-right: 0.5em; }
+    .tally .counts b { font-weight: 500; border-bottom: 1px solid var(--ink); padding: 0 1.8em; margin-right: 2em; }
+    .tally .host { border-top: 1px solid var(--ink); padding-top: 0.3rem; font-size: 8.5pt; color: var(--ink-light); width: 52mm; }
+
+    .doc-footer { margin-top: 0.8rem; padding-top: 0.4rem; border-top: 1px solid var(--rule); font-size: 7.5pt; color: var(--ink-light); text-align: center; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>簽到表</h1>
+    <span class="page-no">第 1 頁，共 1 頁</span>
+  </header>
+
+  <div class="event-info">
+    <div><span>活動名稱</span>2026 年度資訊安全教育訓練（第一梯次）</div>
+    <div><span>日期時間</span>2026-06-26（五）10:00–12:00</div>
+    <div><span>地點</span>八樓大會議室</div>
+    <div><span>主辦單位</span>資訊部</div>
+    <div><span>講師</span>資安顧問 王立群</div>
+    <div><span>時數認證</span>2 小時（年度必修）</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:8%" class="no">編號</th>
+        <th style="width:22%">單位</th>
+        <th style="width:20%">姓名</th>
+        <th style="width:30%" class="sig">簽名</th>
+        <th style="width:20%">備註</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="no">1</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">2</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">3</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">4</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">5</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">6</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">7</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">8</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">9</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">10</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">11</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">12</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">13</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">14</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">15</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">16</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">17</td><td></td><td></td><td class="sig"></td><td></td></tr>
+      <tr><td class="no">18</td><td></td><td></td><td class="sig"></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <div class="tally">
+    <div class="counts">
+      <span>應到</span><b></b>
+      <span>實到</span><b></b>
+      <span>缺席</span><b></b>
+    </div>
+    <div class="host">主辦單位確認（簽名及日期）</div>
+  </div>
+
+  <footer class="doc-footer">
+    本表為出席證明文件，活動結束後由主辦單位掃描歸檔，正本保存一年。
+  </footer>
+
+</body>
+</html>

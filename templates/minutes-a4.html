@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  minutes-a4.html — 會議記錄 template（A4 直式）
+  ═══════════════════════════════════════════════════════════
+  用途：正式會議記錄，以 Cmd+P 匯出 PDF。結構為：會議資訊、
+  出席名單、議題討論、決議事項、行動項目（負責人＋期限）。
+
+  手動使用：替換 .meeting-info 與 .attendees 內容；議題（section）
+  可自由增刪；行動項目列（tbody tr）照樣式複製即可。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 每個議題依「背景→討論→決議」結構撰寫，決議用 .resolution 標出
+  3. 行動項目必須有負責人與期限，狀態僅限：待辦／進行中／完成
+  4. 禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>會議記錄 MM-2026-023</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 20mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10.5pt;
+      line-height: 1.8;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 18pt; font-weight: 700; letter-spacing: 0.1em; }
+    .doc-header .doc-no { font-size: 8.5pt; color: var(--ink-light); text-align: right; line-height: 1.6; }
+    .doc-header .doc-no b { color: var(--ink); font-weight: 500; margin-left: 0.5em; }
+
+    /* 會議資訊 */
+    .meeting-info { display: grid; grid-template-columns: 1fr 1fr; gap: 0.2rem 2.5rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.8rem; margin-bottom: 0.8rem; font-size: 9.5pt; }
+    .meeting-info span { color: var(--ink-light); font-size: 8.5pt; margin-right: 0.8em; }
+
+    /* 出席名單 */
+    .attendees { border-bottom: 1px solid var(--rule); padding-bottom: 0.8rem; margin-bottom: 1.8rem; font-size: 9.5pt; }
+    .attendees div { display: flex; gap: 0.8em; }
+    .attendees span { color: var(--ink-light); font-size: 8.5pt; flex-shrink: 0; line-height: inherit; }
+
+    /* 議題 */
+    section { margin-bottom: 1.8rem; }
+    h2 {
+      font-size: 12pt; font-weight: 700;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.7rem;
+    }
+    p { margin-bottom: 0.6rem; text-align: justify; }
+    ul, ol { padding-left: 1.6rem; margin-bottom: 0.6rem; }
+
+    /* 決議框 */
+    .resolution { border: 1px solid var(--ink); padding: 0.6rem 1rem; margin: 0.8rem 0; font-size: 9.5pt; }
+    .resolution > b:first-child { display: block; font-size: 8.5pt; letter-spacing: 0.25em; color: var(--accent); margin-bottom: 0.2rem; }
+
+    /* 行動項目表 */
+    table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.4rem 0.6rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.45rem 0.6rem; vertical-align: top; }
+    .center { text-align: center; }
+
+    /* 文件尾 */
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 2.5rem; padding-top: 0.6rem; font-size: 8pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    /* 分頁控制 */
+    section, table, .resolution { break-inside: avoid; }
+    h2 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>會議記錄</h1>
+    <div class="doc-no">
+      <div>編號<b>MM-2026-023</b></div>
+      <div>記錄<b>陳柏宇</b></div>
+    </div>
+  </header>
+
+  <div class="meeting-info">
+    <div><span>會議名稱</span>第二季產品路線檢討會議</div>
+    <div><span>主持人</span>張惟誠 產品總監</div>
+    <div><span>時間</span>2026-06-11（四）14:00–15:30</div>
+    <div><span>地點</span>八樓第一會議室 / Google Meet</div>
+  </div>
+
+  <div class="attendees">
+    <div><span>出席</span>張惟誠、林佳蓉、陳柏宇、吳孟哲、許芳瑜、David Liu</div>
+    <div><span>請假</span>黃士豪（出差，由吳孟哲代理）</div>
+    <div><span>列席</span>客服部 王心妤（議題二）</div>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>議題一　第二季產品指標回顧</h2>
+      <p>林佳蓉報告第二季至今的核心指標：月活躍用戶較上季成長 11%，但新用戶七日留存自 34% 下滑至 29%，主要流失點集中在註冊後的初始設定流程。</p>
+      <p>討論認為留存下滑與四月改版後初始設定步驟增加有關，需先以數據驗證再決定是否回退。</p>
+      <div class="resolution">
+        <b>決議</b>
+        由數據組於一週內提出改版前後的設定流程漏斗對比；確認因果後再評估簡化方案，本議題列入下次會議追蹤。
+      </div>
+    </section>
+
+    <section>
+      <h2>議題二　客服工單系統汰換評估</h2>
+      <p>王心妤說明現行工單系統的三項痛點：無法與 CRM 同步客戶資料、報表需手動匯出、行動端體驗不佳。已初步評估兩套替代方案，建置成本與年費詳見會前資料。</p>
+      <p>與會者對自建與採購兩案各有支持，考量導入時程與維護人力，傾向採購現成方案並保留 API 整合彈性。</p>
+      <div class="resolution">
+        <b>決議</b>
+        採購案進入詢價程序，由客服部與資訊部共同擬定需求規格書，七月第一週前完成供應商初選。
+      </div>
+    </section>
+
+    <section>
+      <h2>議題三　臨時動議</h2>
+      <p>吳孟哲提議將每週產品例會由 60 分鐘縮短為 45 分鐘，會前資料改為前一日中午前發出。經舉手表決，全數同意，自下週起實施。</p>
+    </section>
+
+    <section>
+      <h2>行動項目</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:6%">#</th>
+            <th>事項</th>
+            <th style="width:14%">負責人</th>
+            <th style="width:14%" class="center">期限</th>
+            <th style="width:12%" class="center">狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>產出初始設定流程改版前後漏斗對比報告</td>
+            <td>許芳瑜</td>
+            <td class="center">2026-06-18</td>
+            <td class="center">進行中</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>擬定工單系統需求規格書並發出詢價</td>
+            <td>王心妤、David Liu</td>
+            <td class="center">2026-07-03</td>
+            <td class="center">待辦</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>更新例會時程與會前資料發送規則並通知全員</td>
+            <td>陳柏宇</td>
+            <td class="center">2026-06-13</td>
+            <td class="center">待辦</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>下次會議：2026-06-25（四）14:00，地點同本次。</p>
+    </section>
+
+  </main>
+
+  <footer class="doc-footer">
+    <span>第二季產品路線檢討會議 · MM-2026-023</span>
+    <span>機密等級：內部使用</span>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  memory/loci-a4.html — 記憶宮殿對照表（A4 直式，單頁）
+  ═══════════════════════════════════════════════════════════
+  用途：記憶宮殿（位置法，Method of Loci）站點對照表。
+  選一條走過上百次的路線，固定站點順序，把要背的項目
+  變成誇張的畫面「掛」在每個站點上；回憶時在腦中走一遍
+  路線。適合背有順序的清單：簡報段落、流程步驟、講稿要點。
+
+  手動使用：列印後手寫；前幾列為填寫範例。同一條路線可
+  重複用於不同清單，但同時只掛一份，背完再換。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 若使用者提供路線與待記清單，代填站點與項目欄；
+     「連結畫面」欄可給建議但註明僅供參考——畫面必須
+     荒謬、具體、有動作，且最好由本人自己想才掛得牢
+  3. 站點數多於項目數沒關係，反之則要換更長的路線；
+     站點順序一經決定不可重排
+  4. 維持單頁；禁用 emoji 與裝飾性元素，維持編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>記憶宮殿對照表</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 13mm 14mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 9pt;
+      line-height: 1.5;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.45rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 13pt; font-weight: 700; }
+    .doc-header h1 small { font-size: 8pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.3em; margin-left: 0.8em; }
+    .doc-header .meta { font-size: 8.5pt; color: var(--ink-light); }
+    .doc-header .meta b { color: var(--ink); font-weight: 500; margin-left: 0.4em; }
+
+    /* 路線資訊 */
+    .route { display: grid; grid-template-columns: 1.2fr 1.2fr 0.8fr; gap: 0.2rem 1.5rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.45rem; margin-bottom: 0.6rem; font-size: 9pt; }
+    .route span { color: var(--ink-light); font-size: 7.5pt; display: block; }
+
+    /* 用法 */
+    .howto { font-size: 8pt; color: var(--ink-light); border-bottom: 1px solid var(--rule); padding-bottom: 0.45rem; margin-bottom: 0.6rem; display: flex; gap: 1.4rem; }
+    .howto b { color: var(--ink); font-weight: 700; }
+
+    /* 主表 */
+    table { width: 100%; border-collapse: collapse; }
+    th { font-weight: 500; font-size: 7.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.25rem 0.45rem; text-align: left; }
+    th.c { text-align: center; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.3rem 0.45rem; height: 13.5mm; vertical-align: middle; }
+    .idx { text-align: center; color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+    td small { color: var(--ink-light); font-size: 7.5pt; display: block; }
+
+    /* 走訪記錄 */
+    .visits { display: flex; align-items: center; gap: 0.8rem; border-top: 2px solid var(--ink); margin-top: 0; padding: 0.4rem 0.2rem 0; font-size: 8.5pt; }
+    .visits h2 { font-size: 8pt; font-weight: 700; letter-spacing: 0.2em; color: var(--ink-light); }
+    .visits .slot { display: inline-flex; align-items: baseline; gap: 0.3em; }
+    .visits .slot span { border-bottom: 1px solid var(--rule); min-width: 4.5em; display: inline-block; }
+    .visits .hint { margin-left: auto; color: var(--ink-light); font-size: 7.5pt; }
+
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 0.5rem; padding-top: 0.3rem; font-size: 7.5pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    table { break-inside: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>記憶宮殿對照表<small>位置法 Method of Loci</small></h1>
+    <div class="meta">建立日期<b>2026-06-11</b></div>
+  </header>
+
+  <div class="route">
+    <div><span>路線（走過上百次的熟路）</span>家門口 → 捷運站</div>
+    <div><span>這次要背的清單</span>募資簡報八大段落（依出場順序）</div>
+    <div><span>使用期限</span>06-25 提案日</div>
+  </div>
+
+  <div class="howto">
+    <div><b>1</b>　站點要照實際路線順序，固定後不再改。</div>
+    <div><b>2</b>　畫面要荒謬、具體、有動作——平淡的畫面記不住。</div>
+    <div><b>3</b>　回憶＝在腦中走一遍路線，逐站「看」畫面。</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:6%" class="c">站</th>
+        <th style="width:22%">地點（路線上的位置）</th>
+        <th style="width:24%">待記項目</th>
+        <th>連結畫面（越誇張越好，寫給自己看）</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="idx">1</td>
+        <td>玄關鞋櫃</td>
+        <td>開場鉤子：客戶的一天</td>
+        <td>鞋櫃裡每隻鞋都裝著一個迷你客戶，七嘴八舌跟我抱怨停機。</td>
+      </tr>
+      <tr>
+        <td class="idx">2</td>
+        <td>電梯按鈕</td>
+        <td>問題定義：停機成本</td>
+        <td>按鈕一按就噴鈔票，電梯顯示的不是樓層是燒掉的錢。</td>
+      </tr>
+      <tr>
+        <td class="idx">3</td>
+        <td>一樓管理室</td>
+        <td>市場規模</td>
+        <td>管理員把整個台灣地圖攤在桌上，上面插滿密密麻麻的工廠小旗。</td>
+      </tr>
+      <tr>
+        <td class="idx">4</td>
+        <td>中庭噴水池</td>
+        <td>解法展示（demo）</td>
+        <td>噴水池噴出的是即時數據圖表，水柱高低就是稼動率曲線。</td>
+      </tr>
+      <tr>
+        <td class="idx">5</td>
+        <td>社區大門警衛亭</td>
+        <td>商業模式：訂閱制</td>
+        <td>警衛每月跟每條產線收一張門票，撕票根的聲音超大聲。</td>
+      </tr>
+      <tr>
+        <td class="idx">6</td>
+        <td>巷口便利商店</td>
+        <td>競爭分析</td>
+        <td>貨架上競品包裝全在打架，我們的產品被店長放在收銀機旁發光。</td>
+      </tr>
+      <tr>
+        <td class="idx">7</td>
+        <td>紅綠燈路口</td>
+        <td>團隊介紹</td>
+        <td>四個創辦人站在斑馬線四角指揮交通，每人制服印著自己的專長。</td>
+      </tr>
+      <tr>
+        <td class="idx">8</td>
+        <td>捷運閘門</td>
+        <td>募資需求與用途</td>
+        <td>閘門只收支票不收悠遊卡，嗶一聲螢幕跳出資金用途圓餅圖。</td>
+      </tr>
+      <tr><td class="idx">9</td><td></td><td></td><td></td></tr>
+      <tr><td class="idx">10</td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <div class="visits">
+    <h2>走訪記錄</h2>
+    <span class="slot">當天<span></span></span>
+    <span class="slot">+1 天<span></span></span>
+    <span class="slot">+3 天<span></span></span>
+    <span class="slot">+7 天<span></span></span>
+    <span class="slot">使用前一晚<span></span></span>
+    <span class="hint">每次走訪：不看表、在腦中走完全程，卡住的站點回來補畫面</span>
+  </div>
+
+  <footer class="doc-footer">
+    <span>記憶宮殿對照表 · 一條路線同時只掛一份清單</span>
+    <span>適合背「有順序」的東西：講稿、流程、條文</span>
+  </footer>
+
+</body>
+</html>

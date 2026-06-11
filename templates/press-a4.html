@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  press-a4.html — 新聞稿／對外公告 template（A4 直式）
+  ═══════════════════════════════════════════════════════════
+  用途：發給媒體的新聞稿，或對客戶／合作夥伴的正式對外公告，
+  以 Cmd+P 匯出 PDF 或直接貼信。結構為：發布資訊、標題與副標、
+  發稿地點日期、內文（含引言）、關於公司、媒體聯絡人。
+
+  手動使用：替換標題、內文段落與聯絡人；引言（.pull-quote）
+  可刪；「關於公司」段落寫好一次之後每篇沿用。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 標題寫事實不寫口號；首段交代人事時地物，一段讀完就懂全貌
+  3. 引言必須註明發言人姓名與職稱，語氣口語但不浮誇
+  4. 內文兩到四段為宜；禁用 emoji 與驚嘆號堆疊，維持編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新聞稿：亙宇數位發布智慧製造數據平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+      --font-display: 'Noto Serif TC', 'Songti TC', 'Noto Sans TC', 'Heiti TC', serif;
+    }
+    @page { size: A4; margin: 20mm 20mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10.5pt;
+      line-height: 1.9;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 720px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 發布資訊列 */
+    .release-bar { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--ink); padding-bottom: 0.6rem; margin-bottom: 1.4rem; }
+    .release-bar .co { font-size: 11pt; font-weight: 700; letter-spacing: 0.1em; }
+    .release-bar .tag { font-size: 8.5pt; letter-spacing: 0.3em; color: var(--ink-light); }
+    .release-bar .tag b { color: var(--ink); font-weight: 700; }
+
+    /* 標題 */
+    .headline { margin-bottom: 0.5rem; }
+    .headline h1 { font-family: var(--font-display); font-size: 19pt; font-weight: 700; line-height: 1.5; }
+    .subhead { font-size: 11pt; color: var(--ink-light); line-height: 1.7; border-bottom: 1px solid var(--rule); padding-bottom: 1rem; margin-bottom: 1.4rem; }
+
+    /* 內文 */
+    p { margin-bottom: 0.9rem; text-align: justify; }
+    .dateline { font-weight: 700; }
+
+    /* 引言 */
+    .pull-quote { border-left: 4px solid var(--accent); padding: 0.4rem 0 0.4rem 1.1rem; margin: 1.2rem 0; }
+    .pull-quote p { font-family: var(--font-display); font-size: 11.5pt; line-height: 1.8; margin-bottom: 0.3rem; }
+    .pull-quote cite { font-style: normal; font-size: 9pt; color: var(--ink-light); }
+
+    /* 關於公司 */
+    .about { background: var(--bg-soft); padding: 0.9rem 1.1rem; margin-top: 1.8rem; font-size: 9pt; line-height: 1.8; }
+    .about h2 { font-size: 9pt; letter-spacing: 0.25em; margin-bottom: 0.3rem; }
+    .about p { margin-bottom: 0; }
+
+    /* 媒體聯絡人 */
+    .contact { border-top: 2px solid var(--ink); margin-top: 1.4rem; padding-top: 0.7rem; font-size: 9pt; display: flex; justify-content: space-between; }
+    .contact h2 { font-size: 9pt; letter-spacing: 0.25em; margin-bottom: 0.2rem; }
+    .contact .end-mark { align-self: flex-end; color: var(--ink-light); letter-spacing: 0.3em; }
+
+    .pull-quote, .about, .contact { break-inside: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="release-bar">
+    <div class="co">亙宇數位股份有限公司</div>
+    <div class="tag">新聞稿 · <b>即時發布</b> · 2026-06-11</div>
+  </header>
+
+  <div class="headline">
+    <h1>亙宇數位發布智慧製造數據平台，首波導入三家精密加工廠</h1>
+  </div>
+  <p class="subhead">產線數據十五分鐘內上看板，導入工廠平均減少 23% 非計畫停機；與新銳製造之合作案同步啟動。</p>
+
+  <main>
+
+    <p><span class="dateline">台北訊——</span>亙宇數位股份有限公司今（11）日宣布推出智慧製造數據平台「GENYU Insight」，整合產線設備數據擷取、即時看板與異常預警三項功能。首波已導入三家精密加工廠，試行六個月期間，導入工廠之非計畫停機時間平均減少 23%。</p>
+
+    <p>有別於需停線改造的傳統方案，GENYU Insight 以非侵入式感測器與既有設備控制器介接，平均兩週完成單一產線導入，數據自擷取至看板呈現延遲控制在十五分鐘以內。平台另提供開放 API，可與企業既有的 ERP 與 MES 系統整合。</p>
+
+    <div class="pull-quote">
+      <p>「中小型製造業要的不是再買一套系統，而是把現有設備的數據變成每天早會看得懂的三張圖。我們把導入門檻壓到兩週，就是為了讓廠長願意開始。」</p>
+      <cite>—— 亙宇數位董事長　張惟誠</cite>
+    </div>
+
+    <p>亙宇數位同時宣布與新銳製造股份有限公司簽署合作備忘錄，將於其桃園廠區建立示範產線，預計於今年第四季對外開放參訪。平台即日起開放預約導入評估，詳情請洽公司網站。</p>
+
+  </main>
+
+  <div class="about">
+    <h2>關於亙宇數位</h2>
+    <p>亙宇數位股份有限公司成立於 2015 年，專注於企業系統整合與數據平台開發，服務涵蓋零售、製造與金融產業，現有員工 120 人，總部位於台北。更多資訊請見 www.genyu.example.com。</p>
+  </div>
+
+  <div class="contact">
+    <div>
+      <h2>媒體聯絡人</h2>
+      行銷部　許芳瑜<br>
+      02-2511-3300 分機 330 · press@genyu.example.com
+    </div>
+    <div class="end-mark">—　以下空白　—</div>
+  </div>
+
+</body>
+</html>

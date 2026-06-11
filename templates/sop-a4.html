@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  sop-a4.html — 標準作業程序（SOP）template（A4 直式）
+  ═══════════════════════════════════════════════════════════
+  用途：標準作業程序文件，以 Cmd+P 匯出 PDF 供現場依循或稽核
+  留存。結構為：文件管制資訊、目的、適用範圍、權責、名詞定義、
+  作業步驟表（含負責角色與注意事項）、異常處理、版本修訂記錄。
+
+  手動使用：替換管制資訊與各 section；步驟列（tbody tr）照
+  樣式增刪，步驟編號連續不跳號。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 步驟用祈使句寫「做什麼、誰做、做到什麼程度算完成」，
+     一步一動作；判斷分支寫在「注意事項」欄
+  3. 異常處理至少涵蓋：執行失敗如何回退、何時升級通報、通報對象
+  4. 版本修訂記錄由舊到新排列，初版即寫入一列
+  5. 禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOP-OPS-012 正式環境資料庫版本升級作業程序</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+      --font-mono: 'SF Mono', 'Consolas', 'Noto Sans TC', 'Heiti TC', monospace;
+    }
+    @page { size: A4; margin: 20mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.75;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.9rem; margin-bottom: 0.8rem; }
+    .doc-kicker { font-size: 8.5pt; letter-spacing: 0.35em; color: var(--ink-light); margin-bottom: 0.4rem; }
+    .doc-header h1 { font-size: 16pt; font-weight: 700; line-height: 1.45; }
+
+    /* 文件管制資訊 */
+    .control { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--ink); margin-bottom: 1.8rem; font-size: 9pt; }
+    .control div { padding: 0.3rem 0.6rem; border-right: 1px solid var(--rule); }
+    .control div:last-child { border-right: none; }
+    .control span { color: var(--ink-light); font-size: 7.5pt; display: block; letter-spacing: 0.1em; }
+    .control b { font-weight: 500; }
+
+    /* 章節 */
+    section { margin-bottom: 1.7rem; }
+    h2 {
+      font-size: 12pt; font-weight: 700;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.7rem;
+    }
+    p { margin-bottom: 0.6rem; text-align: justify; }
+    ul, ol { padding-left: 1.6rem; margin-bottom: 0.6rem; }
+    dt { font-weight: 700; }
+    dd { margin-left: 1.6rem; margin-bottom: 0.4rem; }
+
+    /* 表格 */
+    table { width: 100%; border-collapse: collapse; margin: 0.6rem 0; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.4rem 0.6rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.45rem 0.6rem; vertical-align: top; }
+    td small { color: var(--ink-light); font-size: 8pt; display: block; }
+    .center { text-align: center; }
+    .step-no { font-variant-numeric: tabular-nums; font-weight: 700; }
+    .phase td { background: var(--bg-soft); font-weight: 700; font-size: 9pt; letter-spacing: 0.1em; }
+
+    code { font-family: var(--font-mono); font-size: 8.5pt; background: var(--bg-soft); padding: 0.1em 0.35em; }
+
+    /* 警告框 */
+    .caution { border: 1px solid var(--ink); padding: 0.6rem 1rem; margin: 0.8rem 0; font-size: 9.5pt; }
+    .caution > b:first-child { display: block; font-size: 8.5pt; letter-spacing: 0.25em; color: var(--accent); margin-bottom: 0.2rem; }
+
+    /* 文件尾 */
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 2.5rem; padding-top: 0.6rem; font-size: 8pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    /* 分頁控制 */
+    table, .caution, .control { break-inside: avoid; }
+    h2 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <p class="doc-kicker">標準作業程序</p>
+    <h1>正式環境資料庫版本升級作業程序</h1>
+  </header>
+
+  <div class="control">
+    <div><span>文件編號</span><b>SOP-OPS-012</b></div>
+    <div><span>版本</span><b>v2.1</b></div>
+    <div><span>生效日</span><b>2026-06-11</b></div>
+    <div><span>制定單位</span><b>後端平台組</b></div>
+    <div><span>核准</span><b>技術長</b></div>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>1. 目的</h2>
+      <p>規範正式環境 PostgreSQL 資料庫版本升級之標準步驟，確保升級過程服務中斷時間控制在五分鐘以內，且任一步驟失敗時可於三十分鐘內回退至原版本。</p>
+    </section>
+
+    <section>
+      <h2>2. 適用範圍</h2>
+      <p>適用於正式環境所有 PostgreSQL 叢集之次版本與主版本升級。測試環境升級得簡化執行，但仍應留存記錄。緊急安全修補另依資安事件處理程序辦理。</p>
+    </section>
+
+    <section>
+      <h2>3. 權責</h2>
+      <table>
+        <thead>
+          <tr><th style="width:22%">角色</th><th>職責</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>升級執行人（DBA）</td><td>執行升級步驟、確認各檢核點、執行回退決策。</td></tr>
+          <tr><td>應用待命工程師</td><td>升級窗口全程待命，負責應用端健康檢查與流量切換。</td></tr>
+          <tr><td>值班主管</td><td>核准升級窗口、接受異常通報、決定是否啟動事故流程。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>4. 名詞定義</h2>
+      <dl>
+        <dt>升級窗口</dt>
+        <dd>經值班主管核准之低流量時段，原則為週四 02:00–05:00。</dd>
+        <dt>檢核點</dt>
+        <dd>步驟表中標注「檢核」之步驟，未通過不得進入下一步。</dd>
+      </dl>
+    </section>
+
+    <section>
+      <h2>5. 作業步驟</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:8%" class="center">步驟</th>
+            <th>作業內容</th>
+            <th style="width:14%">負責角色</th>
+            <th style="width:26%">注意事項</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="phase"><td colspan="4">階段一　升級前準備（窗口前一個工作日完成）</td></tr>
+          <tr>
+            <td class="center step-no">1</td>
+            <td>於測試環境以正式資料副本完整演練一次，記錄各步驟耗時。</td>
+            <td>DBA</td>
+            <td>演練未通過者取消本次窗口，重新排程。</td>
+          </tr>
+          <tr>
+            <td class="center step-no">2</td>
+            <td>確認完整備份完成且可還原，還原測試以抽查方式驗證。</td>
+            <td>DBA</td>
+            <td>檢核：備份時間戳須在 24 小時內。</td>
+          </tr>
+          <tr>
+            <td class="center step-no">3</td>
+            <td>發送升級通知至相關群組，載明窗口時間與影響範圍。</td>
+            <td>DBA</td>
+            <td>通知須含回退決策時限（見步驟 9）。</td>
+          </tr>
+          <tr class="phase"><td colspan="4">階段二　升級執行（升級窗口內）</td></tr>
+          <tr>
+            <td class="center step-no">4</td>
+            <td>暫停批次作業排程，確認無長交易在途（<code>pg_stat_activity</code> 無超過 60 秒之交易）。</td>
+            <td>DBA</td>
+            <td>有長交易時等待其結束，不得強制中斷付款相關交易。</td>
+          </tr>
+          <tr>
+            <td class="center step-no">5</td>
+            <td>應用切換至唯讀模式，對外公告維護開始。</td>
+            <td>應用待命工程師</td>
+            <td>檢核：寫入請求須回應 503 並帶維護訊息。</td>
+          </tr>
+          <tr>
+            <td class="center step-no">6</td>
+            <td>升級備庫並切換主備角色，再升級原主庫。</td>
+            <td>DBA</td>
+            <td>角色切換後立即確認複寫延遲歸零。</td>
+          </tr>
+          <tr>
+            <td class="center step-no">7</td>
+            <td>執行升級後檢查清單：擴充套件版本、統計資訊重建、關鍵查詢執行計畫抽查。</td>
+            <td>DBA</td>
+            <td>檢核：三項全數通過方可恢復寫入。</td>
+          </tr>
+          <tr class="phase"><td colspan="4">階段三　恢復與觀察</td></tr>
+          <tr>
+            <td class="center step-no">8</td>
+            <td>應用恢復讀寫，執行端到端煙霧測試（下單、查詢、退貨各一筆）。</td>
+            <td>應用待命工程師</td>
+            <td>檢核：三筆測試單全部成功並沖銷。</td>
+          </tr>
+          <tr>
+            <td class="center step-no">9</td>
+            <td>觀察 30 分鐘：錯誤率、延遲、複寫延遲均在正常區間後，宣告升級完成並發送通知。</td>
+            <td>DBA</td>
+            <td>觀察期內任一指標異常即進入第 6 節異常處理。</td>
+          </tr>
+          <tr>
+            <td class="center step-no">10</td>
+            <td>恢復批次排程，更新資產清單之版本記錄，歸檔本次執行記錄。</td>
+            <td>DBA</td>
+            <td>執行記錄含各步驟實際時間，供下次演練比對。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>6. 異常處理</h2>
+      <div class="caution">
+        <b>回退決策時限</b>
+        步驟 6 至 8 之間發生無法於 15 分鐘內排除之異常，一律回退，不得在窗口內嘗試除錯。回退程序：應用維持唯讀 → 主備角色切回原主庫（原版本）→ 煙霧測試 → 恢復讀寫。
+      </div>
+      <ul>
+        <li>回退後於兩個工作日內提交異常分析，重新排程升級窗口。</li>
+        <li>升級造成資料異常或回退失敗時，立即通報值班主管啟動事故流程（參照 SOP-OPS-001），並凍結現場狀態供分析。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>7. 版本修訂記錄</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:10%">版本</th>
+            <th style="width:14%" class="center">日期</th>
+            <th>修訂內容</th>
+            <th style="width:14%">修訂人</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>v1.0</td><td class="center">2024-09-02</td><td>初版制定。</td><td>資訊部</td></tr>
+          <tr><td>v2.0</td><td class="center">2025-11-14</td><td>改為主備切換式升級，停機目標自 30 分鐘縮短為 5 分鐘。</td><td>後端平台組</td></tr>
+          <tr><td>v2.1</td><td class="center">2026-06-11</td><td>新增回退決策時限 15 分鐘之硬性規定（INC-2025-031 改善項目）。</td><td>陳柏宇</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <footer class="doc-footer">
+    <span>SOP-OPS-012 · v2.1 · 正式環境資料庫版本升級作業程序</span>
+    <span>管制文件：列印副本不受版本管制，使用前請核對現行版</span>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  mou-a4.html — 合作備忘錄／簡式合約 template（A4 直式）
+  ═══════════════════════════════════════════════════════════
+  用途：合作備忘錄（MOU）或條款不多的簡式合約，以 Cmd+P 匯出
+  PDF 後用印。結構為：標題、立約雙方、條文（第一條至第 N 條）、
+  用印欄。改標題與條文後也適用保密協議（NDA）、合作意向書。
+
+  手動使用：替換 .parties 雙方資訊與 .articles 條文；條文
+  （.article）可自由增刪，編號手動維護以免法律文件出現歧義。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 條文用語精確：當事人一律以「甲方」「乙方」稱之，不得混用簡稱
+  3. 必備條文：目的、合作內容、效期、保密、終止、準據法與管轄法院
+  4. 末條之後保留「以下空白」標示與用印欄；禁用 emoji 與裝飾性元素
+  5. 提醒使用者：本 template 僅為格式底稿，正式簽署前應經法務審閱
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>合作備忘錄 MOU-2026-005</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+      --font-display: 'Noto Serif TC', 'Songti TC', 'Noto Sans TC', 'Heiti TC', serif;
+    }
+    @page { size: A4; margin: 22mm 20mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10.5pt;
+      line-height: 1.95;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 720px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 標題 */
+    .doc-title { text-align: center; margin-bottom: 0.4rem; }
+    .doc-title h1 { font-family: var(--font-display); font-size: 19pt; font-weight: 700; letter-spacing: 0.35em; text-indent: 0.35em; }
+    .doc-no { text-align: center; font-size: 8.5pt; color: var(--ink-light); margin-bottom: 1.8rem; }
+
+    /* 立約雙方 */
+    .parties { border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule); padding: 0.9rem 0.2rem; margin-bottom: 1.6rem; font-size: 10pt; }
+    .parties .party { display: grid; grid-template-columns: 9em 1fr; gap: 0.1rem 1rem; margin-bottom: 0.6rem; }
+    .parties .party:last-child { margin-bottom: 0; }
+    .parties .role { font-weight: 700; }
+    .parties .detail { color: var(--ink-light); font-size: 9pt; grid-column: 2; }
+
+    /* 前言 */
+    .preamble { margin-bottom: 1.4rem; text-align: justify; }
+
+    /* 條文 */
+    .article { margin-bottom: 1.1rem; }
+    .article h2 { font-size: 10.5pt; font-weight: 700; margin-bottom: 0.2rem; }
+    .article p { text-align: justify; margin-bottom: 0.3rem; }
+    .article ol { padding-left: 2.2rem; }
+    .article ol li { padding-left: 0.3rem; }
+
+    /* 以下空白 */
+    .blank-below { text-align: center; font-size: 9pt; color: var(--ink-light); letter-spacing: 0.5em; margin: 2rem 0 1.5rem; }
+
+    /* 用印欄 */
+    .signing { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 1rem; }
+    .signing .block { font-size: 9.5pt; }
+    .signing .block .role { font-weight: 700; border-bottom: 2px solid var(--ink); padding-bottom: 0.3rem; margin-bottom: 0.7rem; letter-spacing: 0.15em; }
+    .signing .block .field { display: grid; grid-template-columns: 6em 1fr; padding: 0.3rem 0; border-bottom: 1px solid var(--rule); }
+    .signing .block .field span { color: var(--ink-light); font-size: 8.5pt; }
+    .signing .block .seal { height: 26mm; border-bottom: 1px solid var(--rule); padding-top: 0.3rem; }
+    .signing .block .seal span { color: var(--ink-light); font-size: 8.5pt; }
+
+    .sign-date { margin-top: 2.2rem; text-align: center; font-size: 10.5pt; letter-spacing: 0.3em; }
+
+    .doc-footer { margin-top: 2rem; padding-top: 0.5rem; border-top: 1px solid var(--rule); font-size: 7.5pt; color: var(--ink-light); text-align: center; }
+
+    /* 分頁控制 */
+    .article, .signing, .parties { break-inside: avoid; }
+    .article h2 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <div class="doc-title">
+    <h1>合作備忘錄</h1>
+  </div>
+  <p class="doc-no">文件編號 MOU-2026-005</p>
+
+  <div class="parties">
+    <div class="party">
+      <span class="role">立約人　甲方</span><span>亙宇數位股份有限公司</span>
+      <span class="detail">統一編號 24668357　代表人：張惟誠　地址：台北市中山區南京東路二段 100 號 8 樓</span>
+    </div>
+    <div class="party">
+      <span class="role">立約人　乙方</span><span>新銳製造股份有限公司</span>
+      <span class="detail">統一編號 53024187　代表人：周建宏　地址：桃園市龜山區文化二路 66 號</span>
+    </div>
+  </div>
+
+  <p class="preamble">甲乙雙方為推動智慧製造數據平台之合作開發（以下稱「本合作案」），本於誠信互惠原則，同意簽訂本備忘錄，約定條款如下：</p>
+
+  <main class="articles">
+
+    <div class="article">
+      <h2>第一條　目的</h2>
+      <p>本備忘錄旨在確立雙方就本合作案之合作架構、權責分工與後續正式契約之協商基礎。</p>
+    </div>
+
+    <div class="article">
+      <h2>第二條　合作內容</h2>
+      <ol>
+        <li>甲方負責數據平台之系統設計、開發與維運技術支援。</li>
+        <li>乙方負責提供產線數據介接環境、領域知識諮詢及試行場域。</li>
+        <li>雙方各自指派專案窗口一名，每月召開一次工作會議檢視進度。</li>
+      </ol>
+    </div>
+
+    <div class="article">
+      <h2>第三條　效期</h2>
+      <p>本備忘錄自雙方簽署日起生效，效期一年。期滿前一個月，任一方得以書面通知他方協商續約；未續約者，本備忘錄屆期自動失效。</p>
+    </div>
+
+    <div class="article">
+      <h2>第四條　保密義務</h2>
+      <p>雙方因本合作案知悉或持有他方之營業秘密及機密資訊，非經他方事前書面同意，不得揭露予第三人或用於本合作案以外之目的。本條義務於本備忘錄終止或失效後三年內仍繼續有效。</p>
+    </div>
+
+    <div class="article">
+      <h2>第五條　智慧財產權</h2>
+      <p>雙方於簽署本備忘錄前各自既有之智慧財產權，仍歸各自所有。本合作案執行期間共同產出之成果，其權利歸屬由雙方於正式契約中另行約定。</p>
+    </div>
+
+    <div class="article">
+      <h2>第六條　非排他與費用</h2>
+      <p>本備忘錄不具排他性，亦不構成任何一方之出資、採購或付款義務。雙方為本合作案所生之費用，除另有書面約定外，由各方自行負擔。</p>
+    </div>
+
+    <div class="article">
+      <h2>第七條　終止</h2>
+      <p>任一方得以三十日前之書面通知終止本備忘錄。終止時，雙方應返還或銷毀他方之機密資訊，且不得向他方請求任何補償或賠償。</p>
+    </div>
+
+    <div class="article">
+      <h2>第八條　準據法與管轄</h2>
+      <p>本備忘錄以中華民國法律為準據法。因本備忘錄所生之爭議，雙方同意以臺灣臺北地方法院為第一審管轄法院。</p>
+    </div>
+
+    <div class="article">
+      <h2>第九條　其他</h2>
+      <p>本備忘錄一式二份，由雙方各執一份為憑。本備忘錄之修改或補充，應經雙方書面同意後始生效力。</p>
+    </div>
+
+  </main>
+
+  <p class="blank-below">——　以下空白　——</p>
+
+  <div class="signing">
+    <div class="block">
+      <div class="role">甲　方</div>
+      <div class="field"><span>公司名稱</span>亙宇數位股份有限公司</div>
+      <div class="field"><span>代表人</span>張惟誠</div>
+      <div class="field"><span>職稱</span>董事長</div>
+      <div class="seal"><span>公司及代表人用印</span></div>
+    </div>
+    <div class="block">
+      <div class="role">乙　方</div>
+      <div class="field"><span>公司名稱</span>新銳製造股份有限公司</div>
+      <div class="field"><span>代表人</span>周建宏</div>
+      <div class="field"><span>職稱</span>總經理</div>
+      <div class="seal"><span>公司及代表人用印</span></div>
+    </div>
+  </div>
+
+  <p class="sign-date">中華民國　115　年　6　月　　日</p>
+
+  <footer class="doc-footer">
+    本文件為格式範本，正式簽署前應經雙方法務審閱。
+  </footer>
+
+</body>
+</html>

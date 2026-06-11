@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  report-a4.html — 報告/文件 template（A4 直式）
+  ═══════════════════════════════════════════════════════════
+  用途：技術報告、評估文件、會議記錄等正式文件，以 Cmd+P 匯出 PDF。
+
+  手動使用：複製本檔，替換 <main> 內的章節內容；章節（section）、
+  表格、程式碼區塊、重點框（.note）皆可自由增刪複製。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 只替換 .doc-header 的標題/meta 與 <main> 內的章節內容
+  3. 沿用既有的 h2 編號、表格、.note、pre 的寫法，不新增其他樣式
+  4. 禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>系統效能評估報告</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-code: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+      --font-display: 'Noto Serif TC', 'Songti TC', 'Noto Sans TC', 'Heiti TC', serif;
+      --font-mono: 'SF Mono', 'Consolas', 'Noto Sans TC', 'Heiti TC', monospace;
+    }
+    @page { size: A4; margin: 20mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10.5pt;
+      line-height: 1.85;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 1.2rem; margin-bottom: 0.4rem; }
+    .doc-kicker { font-size: 8.5pt; letter-spacing: 0.35em; color: var(--ink-light); margin-bottom: 0.6rem; }
+    .doc-header h1 { font-family: var(--font-display); font-size: 21pt; font-weight: 700; line-height: 1.4; }
+    .doc-meta { display: flex; gap: 2.5rem; border-bottom: 1px solid var(--rule); padding: 0.5rem 0; margin-bottom: 2rem; font-size: 8.5pt; color: var(--ink-light); }
+    .doc-meta b { color: var(--ink); font-weight: 500; margin-left: 0.5em; }
+
+    /* 章節 */
+    section { margin-bottom: 2.2rem; }
+    h2 {
+      font-size: 13pt; font-weight: 700;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.9rem;
+    }
+    h3 { font-size: 11pt; font-weight: 500; color: var(--accent); margin: 1.3rem 0 0.5rem; }
+    p { margin-bottom: 0.7rem; text-align: justify; }
+    ul, ol { padding-left: 1.6rem; margin-bottom: 0.7rem; }
+
+    /* 表格：細水平線，無斑馬紋 */
+    table { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; border-bottom: 2px solid var(--ink); padding: 0.4rem 0.6rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.45rem 0.6rem; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* 程式碼 */
+    pre, code { font-family: var(--font-mono); font-size: 8.5pt; }
+    pre { background: var(--bg-code); padding: 0.9rem 1.1rem; margin: 0.8rem 0; line-height: 1.6; white-space: pre-wrap; }
+    code { background: var(--bg-code); padding: 0.1em 0.35em; }
+
+    /* 重點框 */
+    .note { border: 1px solid var(--ink); padding: 0.7rem 1rem; margin: 1rem 0; font-size: 9.5pt; }
+    .note > b:first-child { display: block; font-size: 8.5pt; letter-spacing: 0.2em; margin-bottom: 0.25rem; }
+
+    /* 文件尾 */
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 3rem; padding-top: 0.6rem; font-size: 8pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    /* 分頁控制 */
+    section, table, pre, .note { break-inside: avoid; }
+    h2, h3 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <p class="doc-kicker">內部技術文件</p>
+    <h1>訂單服務系統效能評估報告</h1>
+  </header>
+  <div class="doc-meta">
+    <span>文件編號<b>TR-2026-014</b></span>
+    <span>版本<b>v1.2</b></span>
+    <span>日期<b>2026-06-11</b></span>
+    <span>撰寫<b>後端平台組</b></span>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>1. 評估目的與範圍</h2>
+      <p>本次評估針對訂單服務於促銷高峰情境下的承載能力，驗證系統在目標流量（每秒 1,200 筆請求）下能否維持服務水準目標（SLO）。範圍涵蓋下單 API、庫存扣減與付款閘道整合三個關鍵路徑，不含後台報表與批次作業。</p>
+      <div class="note">
+        <b>結論摘要</b>
+        系統於 1,200 RPS 下 P99 延遲為 412 毫秒，符合 500 毫秒之目標；但庫存扣減服務在 1,500 RPS 時出現鎖競爭，建議於下一季實施分片改造。
+      </div>
+    </section>
+
+    <section>
+      <h2>2. 測試環境</h2>
+      <table>
+        <thead>
+          <tr><th>項目</th><th>規格</th><th>數量</th><th>備註</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>應用伺服器</td><td>8 vCPU / 16 GB</td><td class="num">6</td><td>Kubernetes 節點</td></tr>
+          <tr><td>資料庫</td><td>PostgreSQL 16，16 vCPU / 64 GB</td><td class="num">1</td><td>一主二讀</td></tr>
+          <tr><td>快取</td><td>Redis 7 叢集</td><td class="num">3</td><td>分片模式</td></tr>
+          <tr><td>壓測工具</td><td>k6 v0.50</td><td class="num">2</td><td>獨立壓測節點</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>3. 測試結果</h2>
+      <h3>3.1 延遲分布</h3>
+      <table>
+        <thead>
+          <tr><th>流量（RPS）</th><th class="num">P50（ms）</th><th class="num">P95（ms）</th><th class="num">P99（ms）</th><th class="num">錯誤率</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>600</td><td class="num">38</td><td class="num">95</td><td class="num">180</td><td class="num">0.00%</td></tr>
+          <tr><td>1,200</td><td class="num">62</td><td class="num">210</td><td class="num">412</td><td class="num">0.02%</td></tr>
+          <tr><td>1,500</td><td class="num">118</td><td class="num">640</td><td class="num">1,840</td><td class="num">1.40%</td></tr>
+        </tbody>
+      </table>
+
+      <h3>3.2 瓶頸分析</h3>
+      <p>1,500 RPS 時錯誤率上升的主因為庫存扣減交易的列級鎖等待。以下為資料庫端觀測到的等待事件統計：</p>
+      <pre><code>-- 鎖等待事件（取樣 60 秒）
+SELECT wait_event, count(*) AS 次數
+FROM pg_stat_activity
+WHERE state = 'active' GROUP BY wait_event;
+
+ wait_event      | 次數
+-----------------+------
+ Lock:transactionid |  47
+ IO:DataFileRead    |   6</code></pre>
+    </section>
+
+    <section>
+      <h2>4. 建議事項</h2>
+      <ol>
+        <li>熱門商品庫存改採分片計數（sharded counter），分散單列鎖競爭。</li>
+        <li>付款閘道呼叫加入逾時降級，避免外部延遲放大為整體佇列堆積。</li>
+        <li>於每季促銷前一個月執行本壓測情境，納入例行發布流程。</li>
+      </ol>
+    </section>
+
+  </main>
+
+  <footer class="doc-footer">
+    <span>訂單服務系統效能評估報告 · TR-2026-014</span>
+    <span>機密等級：內部使用</span>
+  </footer>
+
+</body>
+</html>

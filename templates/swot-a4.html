@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  swot-a4.html — SWOT 分析 template（A4 直式，單頁）
+  ═══════════════════════════════════════════════════════════
+  用途：策略規劃用 SWOT 分析，以 Cmd+P 匯出 PDF。結構為：
+  分析對象資訊、SWOT 四象限、TOWS 交叉策略表、行動優先序。
+
+  手動使用：替換 .subject 資訊與四象限內容；每象限三至五點
+  最易讀；交叉策略列（tbody tr）照樣式增刪。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. S/W 只寫內部可控因素，O/T 只寫外部環境因素，不可混置；
+     每點都要有依據（數字、事實），不寫「品牌好」這類空話
+  3. TOWS 策略需明確援引象限編號（如 S1×O2），行動優先序
+     從策略中挑出，標明負責人與時限
+  4. 維持單頁；禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SWOT 分析：智慧製造數據平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 15mm 16mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 9.5pt;
+      line-height: 1.55;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.55rem; margin-bottom: 0.55rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 15pt; font-weight: 700; line-height: 1.4; }
+    .doc-header h1 small { display: block; font-size: 8.5pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.3em; }
+    .doc-header .date { font-size: 8.5pt; color: var(--ink-light); text-align: right; line-height: 1.6; }
+    .doc-header .date b { color: var(--ink); font-weight: 500; margin-left: 0.4em; }
+
+    /* 分析對象 */
+    .subject { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0.2rem 1.5rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.6rem; margin-bottom: 1rem; font-size: 9pt; }
+    .subject span { color: var(--ink-light); font-size: 8pt; display: block; }
+
+    /* 區塊標題 */
+    h2 {
+      font-size: 9.5pt; font-weight: 700; letter-spacing: 0.25em;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.5rem;
+    }
+    section { margin-bottom: 0.9rem; }
+
+    /* SWOT 四象限 */
+    .swot-grid { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); }
+    .quad { padding: 0.5rem 0.7rem 0.55rem; }
+    .quad:nth-child(1) { border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .quad:nth-child(2) { border-bottom: 1px solid var(--rule); }
+    .quad:nth-child(3) { border-right: 1px solid var(--rule); }
+    .quad h3 { font-size: 9pt; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 0.35rem; display: flex; align-items: baseline; gap: 0.5em; }
+    .quad h3 .mark { font-size: 13pt; color: var(--accent); }
+    .quad h3 small { font-weight: 400; font-size: 7.5pt; color: var(--ink-light); letter-spacing: 0.05em; margin-left: auto; }
+    .quad ol { list-style: none; }
+    .quad ol li { display: flex; gap: 0.5em; margin-bottom: 0.2rem; text-align: justify; }
+    .quad ol b { color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+
+    /* 軸標 */
+    .axis { display: flex; justify-content: space-between; font-size: 7.5pt; color: var(--ink-light); letter-spacing: 0.3em; margin: 0.25rem 0.2rem 0; }
+
+    /* TOWS 表 */
+    table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+    th { text-align: left; font-weight: 500; font-size: 8pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.3rem 0.5rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.28rem 0.5rem; vertical-align: top; }
+    .tows-type { font-weight: 700; white-space: nowrap; }
+    .tows-type small { display: block; font-weight: 400; font-size: 7.5pt; color: var(--ink-light); }
+    .ref { font-variant-numeric: tabular-nums; color: var(--accent); font-weight: 500; white-space: nowrap; }
+    .center { text-align: center; }
+
+    /* 文件尾 */
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 0.5rem; padding-top: 0.35rem; font-size: 7.5pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    section, table, .swot-grid { break-inside: avoid; }
+    h2 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>
+      <small>SWOT 分析</small>
+      智慧製造數據平台 GENYU Insight
+    </h1>
+    <div class="date">
+      <div>分析日期<b>2026-06-11</b></div>
+      <div>主筆<b>產品部 林佳蓉</b></div>
+    </div>
+  </header>
+
+  <div class="subject">
+    <div><span>分析目的</span>第三季市場擴張策略制定</div>
+    <div><span>範圍</span>台灣中小型製造業市場</div>
+    <div><span>版本</span>v1.0</div>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>SWOT 四象限</h2>
+      <div class="swot-grid">
+        <div class="quad">
+          <h3><span class="mark">S</span>優勢<small>Strengths · 內部</small></h3>
+          <ol>
+            <li><b>S1</b><span>導入週期兩週，為主要競品（八週以上）的四分之一，試行案皆如期交付。</span></li>
+            <li><b>S2</b><span>非侵入式介接，客戶不停線；三家試行廠零停機導入。</span></li>
+            <li><b>S3</b><span>試行成效有數字背書：非計畫停機平均減少 23%。</span></li>
+          </ol>
+        </div>
+        <div class="quad">
+          <h3><span class="mark">W</span>劣勢<small>Weaknesses · 內部</small></h3>
+          <ol>
+            <li><b>W1</b><span>業務團隊僅 4 人且無製造業背景，成案仰賴創辦人人脈。</span></li>
+            <li><b>W2</b><span>尚無 ISO 27001 認證，兩家大型潛在客戶因此暫緩評估。</span></li>
+            <li><b>W3</b><span>產品僅支援三大廠牌控制器，覆蓋市場約六成設備。</span></li>
+          </ol>
+        </div>
+        <div class="quad">
+          <h3><span class="mark">O</span>機會<small>Opportunities · 外部</small></h3>
+          <ol>
+            <li><b>O1</b><span>政府智慧機械補助方案延長至 2027，單案最高補助 50%。</span></li>
+            <li><b>O2</b><span>大廠供應鏈要求二階供應商提供產線數據，中小廠有合規壓力。</span></li>
+            <li><b>O3</b><span>主要競品母公司重組，近半年無重大版本更新。</span></li>
+          </ol>
+        </div>
+        <div class="quad">
+          <h3><span class="mark">T</span>威脅<small>Threats · 外部</small></h3>
+          <ol>
+            <li><b>T1</b><span>國際 PLC 大廠開始隨設備綑綁自家雲端監控服務。</span></li>
+            <li><b>T2</b><span>製造業景氣放緩，客戶資本支出審批趨嚴、週期拉長。</span></li>
+            <li><b>T3</b><span>系統整合商以低價客製案搶占指標客戶。</span></li>
+          </ol>
+        </div>
+      </div>
+      <div class="axis"><span>內部因素（上）</span><span>外部因素（下）</span></div>
+    </section>
+
+    <section>
+      <h2>TOWS 交叉策略</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:14%">策略類型</th>
+            <th style="width:11%">組合</th>
+            <th>策略內容</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tows-type">SO 攻勢<small>優勢×機會</small></td>
+            <td class="ref">S3×O1</td>
+            <td>以試行成效數字包裝「補助申請懶人包」，鎖定補助方案做整合行銷，降低客戶決策門檻。</td>
+          </tr>
+          <tr>
+            <td class="tows-type">WO 補強<small>劣勢×機會</small></td>
+            <td class="ref">W2×O2</td>
+            <td>第三季啟動 ISO 27001 導入，認證前先以第三方資安檢測報告補位，解除大客戶疑慮。</td>
+          </tr>
+          <tr>
+            <td class="tows-type">ST 防禦<small>優勢×威脅</small></td>
+            <td class="ref">S2×T1</td>
+            <td>強調跨廠牌中立性：綑綁服務只看單一品牌設備，混廠牌產線（市場主流）是我方主場。</td>
+          </tr>
+          <tr>
+            <td class="tows-type">WT 迴避<small>劣勢×威脅</small></td>
+            <td class="ref">W1×T3</td>
+            <td>不與整合商打客製價格戰，改經由設備代理商通路合作分潤，借力補業務人力缺口。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>行動優先序</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:6%">#</th>
+            <th>行動方案</th>
+            <th style="width:11%" class="center">對應策略</th>
+            <th style="width:13%">負責人</th>
+            <th style="width:13%" class="center">時限</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>補助申請懶人包與行銷活動上線</td><td class="center ref">S3×O1</td><td>行銷部 許芳瑜</td><td class="center">2026-07-15</td></tr>
+          <tr><td>2</td><td>ISO 27001 導入立項與顧問選商</td><td class="center ref">W2×O2</td><td>資訊部 David Liu</td><td class="center">2026-07-31</td></tr>
+          <tr><td>3</td><td>設備代理商通路合作首家簽約</td><td class="center ref">W1×T3</td><td>業務部 張惟誠</td><td class="center">2026-09-30</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <footer class="doc-footer">
+    <span>SWOT 分析 · 智慧製造數據平台 · v1.0</span>
+    <span>機密等級：內部使用</span>
+  </footer>
+
+</body>
+</html>

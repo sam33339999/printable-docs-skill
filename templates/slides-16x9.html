@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  slides-16x9.html — 簡報 template（16:9 橫式，每頁＝一張投影片）
+  ═══════════════════════════════════════════════════════════
+  用途：簡報。Cmd+P 列印時每張 <section class="slide"> 恰為一頁。
+  附五種頁型：封面（cover）、標題＋內文、兩欄（cols）、
+  大字引言（quote）、結尾（closing）。
+
+  手動使用：複製對應頁型的 <section> 即新增一張投影片；
+  頁碼（.pageno）手動編號。
+
+  列印設定：Cmd+P 後紙張大小會自動套用 16:9（@page 已指定）；
+  若預覽出現白邊，將「邊界」設為「無」並勾選「背景圖形」。
+
+  給 AI 的指示：以本檔為底稿產出簡報時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 只用既有五種頁型組合內容，不發明新版型、不加 emoji 與裝飾 icon
+  3. 每張內文投影片至多 5 個要點，超過就拆頁
+  4. .pageno 重新依序編號
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>季度技術回顧</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #17171b;
+      --paper: #ffffff;
+      --muted: #6b6b6b;
+      --accent: #bf3b2b;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+      --font-display: 'Noto Serif TC', 'Songti TC', 'Noto Sans TC', 'Heiti TC', serif;
+    }
+    @page { size: 1280px 720px; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .slide {
+      width: 1280px; height: 720px;
+      padding: 76px 92px;
+      position: relative;
+      display: flex; flex-direction: column;
+      background: var(--paper);
+      overflow: hidden;
+      page-break-after: always;
+      break-after: page;
+    }
+    .slide:last-of-type { page-break-after: auto; break-after: auto; }
+
+    @media screen {
+      body { background: #e9e9e6; }
+      .slide { margin: 28px auto; box-shadow: 0 1px 4px rgba(0,0,0,0.18); }
+    }
+
+    /* 共用元件 */
+    .kicker {
+      font-size: 15px; letter-spacing: 0.4em; color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+      align-self: flex-start; padding-bottom: 6px; margin-bottom: 28px;
+    }
+    .pageno { position: absolute; bottom: 40px; right: 92px; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+    h2 { font-family: var(--font-display); font-size: 42px; font-weight: 700; line-height: 1.35; margin-bottom: 36px; }
+    .slide ul { list-style: none; font-size: 24px; line-height: 1.65; }
+    .slide ul li { padding-left: 30px; position: relative; margin-bottom: 20px; }
+    .slide ul li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 14px; height: 2px; background: var(--ink); }
+    .slide ul li b { font-weight: 700; }
+
+    /* 頁型：封面 / 結尾（深色） */
+    .cover, .closing { background: var(--ink); color: var(--paper); justify-content: center; }
+    .cover .kicker { color: var(--paper); border-color: var(--accent); }
+    .cover h1 { font-family: var(--font-display); font-size: 68px; font-weight: 900; line-height: 1.3; margin-bottom: 20px; }
+    .cover .subtitle { font-size: 24px; color: #b9b9b9; }
+    .cover .credits { position: absolute; bottom: 76px; left: 92px; font-size: 16px; color: #b9b9b9; display: flex; gap: 3em; }
+    .cover .credits b { color: var(--paper); font-weight: 500; margin-left: 0.8em; }
+
+    /* 頁型：兩欄 */
+    .cols { display: flex; gap: 64px; flex: 1; }
+    .cols > div { flex: 1; }
+    .cols h3 { font-size: 20px; letter-spacing: 0.15em; border-bottom: 1px solid var(--ink); padding-bottom: 10px; margin-bottom: 22px; }
+    .cols ul { font-size: 21px; }
+    .cols ul li { margin-bottom: 14px; }
+
+    /* 頁型：大字引言 */
+    .quote { justify-content: center; }
+    .quote blockquote { max-width: 980px; }
+    .quote blockquote p { font-family: var(--font-display); font-size: 46px; font-weight: 700; line-height: 1.6; }
+    .quote blockquote p::before { content: "「"; color: var(--accent); }
+    .quote blockquote p::after { content: "」"; color: var(--accent); }
+    .quote cite { font-style: normal; font-size: 20px; color: var(--muted); margin-top: 32px; display: block; }
+
+    /* 頁型：結尾 */
+    .closing { align-items: flex-start; }
+    .closing h1 { font-family: var(--font-display); font-size: 56px; font-weight: 900; margin-bottom: 28px; }
+    .closing p { font-size: 20px; color: #b9b9b9; line-height: 1.9; }
+  </style>
+</head>
+<body>
+
+  <!-- 頁型 1：封面 -->
+  <section class="slide cover">
+    <p class="kicker">2026 Q2 工程全員會議</p>
+    <h1>季度技術回顧<br>與下半年路線圖</h1>
+    <p class="subtitle">平台穩定性、開發效率與成本三條主線的進展</p>
+    <div class="credits">
+      <span>報告人<b>製品平台部</b></span>
+      <span>日期<b>2026-06-11</b></span>
+    </div>
+  </section>
+
+  <!-- 頁型 2：標題＋內文 -->
+  <section class="slide">
+    <p class="kicker">本季成果</p>
+    <h2>三項指標全數達標</h2>
+    <ul>
+      <li><b>可用性 99.97%</b>——連續兩季高於 SLO，未發生 P1 事故。</li>
+      <li><b>部署頻率提升 2.4 倍</b>——發布流水線改造後，平均每日部署 17 次。</li>
+      <li><b>單位請求成本下降 18%</b>——快取命中率優化與機型汰換的合併效果。</li>
+    </ul>
+    <span class="pageno">2</span>
+  </section>
+
+  <!-- 頁型 3：兩欄 -->
+  <section class="slide">
+    <p class="kicker">下半年路線圖</p>
+    <h2>兩條並行主線</h2>
+    <div class="cols">
+      <div>
+        <h3>平台演進</h3>
+        <ul>
+          <li>庫存服務分片改造，目標承載 2,000 RPS</li>
+          <li>事件匯流排升級，統一三套訊息格式</li>
+          <li>災難復原演練納入季度例行</li>
+        </ul>
+      </div>
+      <div>
+        <h3>開發體驗</h3>
+        <ul>
+          <li>本機環境一鍵啟動，新人上手縮短至一天</li>
+          <li>合併前自動效能基準比對</li>
+          <li>內部文件站全文檢索</li>
+        </ul>
+      </div>
+    </div>
+    <span class="pageno">3</span>
+  </section>
+
+  <!-- 頁型 4：大字引言 -->
+  <section class="slide quote">
+    <blockquote>
+      <p>穩定性不是專案，是每一次發布都要重新贏得的東西。</p>
+      <cite>—— 本季事故復盤共同結論</cite>
+    </blockquote>
+    <span class="pageno">4</span>
+  </section>
+
+  <!-- 頁型 5：結尾 -->
+  <section class="slide closing">
+    <p class="kicker">Q&amp;A</p>
+    <h1>謝謝，開始討論</h1>
+    <p>
+      完整數據與事故復盤紀錄：內部 Wiki › 平台部 › 2026-Q2<br>
+      會後問題請至 #platform-team 頻道
+    </p>
+    <span class="pageno">5</span>
+  </section>
+
+</body>
+</html>

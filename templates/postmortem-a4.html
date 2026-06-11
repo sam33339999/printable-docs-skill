@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  postmortem-a4.html — 事故報告 template（A4 直式，多頁）
+  ═══════════════════════════════════════════════════════════
+  用途：系統事故檢討報告（postmortem），以 Cmd+P 匯出 PDF。
+  結構為：事故摘要欄、影響範圍、時間軸、根因分析、處置經過、
+  改善項目追蹤表、經驗教訓。
+
+  手動使用：替換摘要欄與各 section；時間軸列、改善項目列
+  （tbody tr）照樣式增刪。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 不究責原則（blameless）：寫「系統／流程缺了什麼」，
+     不寫「誰的疏失」；人名只出現在處置與改善項目的負責人欄
+  3. 時間軸一律 24 小時制精確到分，標注偵測、止血、恢復三個關鍵點
+  4. 根因區分「直接原因」與「系統性原因」；改善項目須有負責人與期限
+  5. 禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>事故報告 INC-2026-009</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #8a2a1a;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+      --font-mono: 'SF Mono', 'Consolas', 'Noto Sans TC', 'Heiti TC', monospace;
+    }
+    @page { size: A4; margin: 20mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10.5pt;
+      line-height: 1.8;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 17pt; font-weight: 700; line-height: 1.45; }
+    .doc-header h1 small { display: block; font-size: 8.5pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.3em; }
+    .severity { border: 2px solid var(--accent); color: var(--accent); font-size: 11pt; font-weight: 700; letter-spacing: 0.15em; padding: 0.15rem 0.9rem; white-space: nowrap; }
+
+    /* 摘要欄 */
+    .facts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.2rem 2rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.8rem; margin-bottom: 1.8rem; font-size: 9.5pt; }
+    .facts span { color: var(--ink-light); font-size: 8pt; display: block; }
+    .facts b { font-weight: 500; font-variant-numeric: tabular-nums; }
+
+    /* 章節 */
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 12.5pt; font-weight: 700;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.8rem;
+    }
+    h3 { font-size: 10.5pt; font-weight: 700; margin: 1rem 0 0.4rem; }
+    p { margin-bottom: 0.7rem; text-align: justify; }
+    ul, ol { padding-left: 1.6rem; margin-bottom: 0.7rem; }
+
+    /* 表格 */
+    table { width: 100%; border-collapse: collapse; margin: 0.6rem 0; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.4rem 0.6rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.4rem 0.6rem; vertical-align: top; }
+    .center { text-align: center; }
+    .time { font-family: var(--font-mono); font-size: 9pt; white-space: nowrap; }
+    .key-point td { background: var(--bg-soft); }
+    .key-point .time { font-weight: 700; }
+
+    /* 重點框 */
+    .note { border: 1px solid var(--ink); padding: 0.7rem 1rem; margin: 1rem 0; font-size: 9.5pt; }
+    .note > b:first-child { display: block; font-size: 8.5pt; letter-spacing: 0.25em; color: var(--accent); margin-bottom: 0.25rem; }
+
+    /* 文件尾 */
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 3rem; padding-top: 0.6rem; font-size: 8pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    /* 分頁控制 */
+    table, .note { break-inside: avoid; }
+    h2, h3 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>
+      <small>事故報告 · INC-2026-009</small>
+      訂單查詢服務大量逾時事故
+    </h1>
+    <div class="severity">SEV-2</div>
+  </header>
+
+  <div class="facts">
+    <div><span>事故時間</span><b>2026-06-09 21:47 – 23:12（85 分鐘）</b></div>
+    <div><span>偵測方式</span><b>告警（P95 延遲閾值）</b></div>
+    <div><span>事故指揮</span><b>陳柏宇（當週值班）</b></div>
+    <div><span>影響服務</span><b>訂單查詢 API、會員中心訂單頁</b></div>
+    <div><span>客訴件數</span><b>17 件</b></div>
+    <div><span>報告日期</span><b>2026-06-11，檢討會 06-13</b></div>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>1. 事故摘要</h2>
+      <p>6 月 9 日晚間促銷活動開始後，訂單查詢服務 P95 延遲自 180ms 飆升至 12 秒，約 35% 查詢請求逾時。根本原因為快取叢集單一節點記憶體耗盡進入連續淘汰，大量請求穿透至資料庫。21:47 告警觸發，22:05 完成止血（流量導離故障節點），23:12 完成節點擴容後全面恢復。下單與付款路徑不受影響，無資料遺失。</p>
+      <div class="note">
+        <b>一句話結論</b>
+        促銷前容量評估只涵蓋資料庫與應用層，快取層記憶體水位不在檢查清單內——這是流程缺口，不是單次操作失誤。
+      </div>
+    </section>
+
+    <section>
+      <h2>2. 影響範圍</h2>
+      <ul>
+        <li>訂單查詢 API：85 分鐘內錯誤率 35%，影響約 4.2 萬人次查詢。</li>
+        <li>會員中心訂單頁：載入逾時，客服收到 17 件客訴，已逐一回覆。</li>
+        <li>下單、付款、出貨：不受影響；無資料遺失或不一致。</li>
+        <li>營收影響：無直接金額損失；品牌觀感影響列入客服追蹤。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>3. 時間軸</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:14%">時間</th>
+            <th>事件</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="time">21:30</td><td>促銷活動開始，查詢流量升至平日 3.8 倍。</td></tr>
+          <tr><td class="time">21:42</td><td>快取節點 cache-02 記憶體達 100%，進入連續淘汰，命中率自 96% 跌至 41%。</td></tr>
+          <tr class="key-point"><td class="time">21:47</td><td>【偵測】P95 延遲告警觸發，值班工程師開始排查。</td></tr>
+          <tr><td class="time">21:58</td><td>確認 cache-02 為瓶頸；資料庫連線數逼近上限，查詢開始排隊。</td></tr>
+          <tr class="key-point"><td class="time">22:05</td><td>【止血】將 cache-02 自負載輪替移除，流量由其餘節點分攤，錯誤率降至 8%。</td></tr>
+          <tr><td class="time">22:20</td><td>申請緊急擴容獲核准，新節點開始預熱。</td></tr>
+          <tr><td class="time">22:55</td><td>新節點加入叢集，命中率回升至 90% 以上。</td></tr>
+          <tr class="key-point"><td class="time">23:12</td><td>【恢復】各項指標回到正常區間，宣告事故解除，保留觀察至午夜。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>4. 根因分析</h2>
+      <h3>直接原因</h3>
+      <p>促銷流量使快取鍵數量超出 cache-02 配置上限，觸發連續淘汰；命中率崩跌後請求穿透至資料庫，連線池耗盡造成排隊逾時。</p>
+      <h3>系統性原因</h3>
+      <ol>
+        <li>促銷前容量檢查清單未包含快取層記憶體水位，僅涵蓋資料庫與應用節點。</li>
+        <li>快取記憶體使用率有監控圖表但無告警閾值，水位問題需事故後人工回看才發現。</li>
+        <li>查詢服務對快取穿透無保護機制（無請求合併、無資料庫端限流），單層故障直接放大為服務故障。</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>5. 改善項目</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:6%">#</th>
+            <th>改善項目</th>
+            <th style="width:14%">負責人</th>
+            <th style="width:14%" class="center">期限</th>
+            <th style="width:12%" class="center">狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>快取記憶體使用率加告警（80% 警告、90% 嚴重）</td><td>陳柏宇</td><td class="center">2026-06-13</td><td class="center">完成</td></tr>
+          <tr><td>2</td><td>促銷前容量檢查清單納入快取層，並補本次流量基準</td><td>林佳蓉</td><td class="center">2026-06-20</td><td class="center">進行中</td></tr>
+          <tr><td>3</td><td>查詢服務加入請求合併與資料庫端限流</td><td>後端平台組</td><td class="center">2026-07-17</td><td class="center">待辦</td></tr>
+          <tr><td>4</td><td>快取節點容量重新規劃，單節點故障不致命中率崩跌</td><td>資訊部</td><td class="center">2026-07-31</td><td class="center">待辦</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>6. 經驗教訓</h2>
+      <ul>
+        <li>做得好：偵測到止血僅 18 分鐘，值班手冊的「導離故障節點」程序發揮作用。</li>
+        <li>該改進：容量評估以「層」為單位逐層檢查，而非只看歷史上出過事的元件。</li>
+        <li>幸運之處：故障發生在查詢路徑而非下單路徑——同樣的穿透問題存在於下單快取，改善項目 3 必須涵蓋。</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="doc-footer">
+    <span>訂單查詢服務大量逾時事故 · INC-2026-009</span>
+    <span>機密等級：內部使用 · 不究責檢討</span>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  jd-a4.html — 職位說明書（Job Description）template（A4 直式，單頁）
+  ═══════════════════════════════════════════════════════════
+  用途：職位說明書，供招募刊登底稿、敘薪評等與績效考核之
+  職責依據，以 Cmd+P 匯出 PDF。結構為：職位基本資訊、職務
+  目的、主要職責（含權重）、任職資格、核心職能、工作條件、
+  簽核。
+
+  手動使用：替換 .position 與各表格內容；職責列（tbody tr）
+  照樣式增刪，權重合計 100%。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 職務目的一段話寫完：這個職位為何存在、對組織的產出是什麼
+  3. 職責寫「動詞＋對象＋產出／衡量」（如：規劃壓測情境，
+     確保大促前完成容量驗證），權重合計 100%，五至七條為宜
+  4. 資格區分「必備」與「加分」，必備條件須為淘汰性條件，
+     不得放裝飾性要求
+  5. 維持單頁；禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>職位說明書：資深後端工程師</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 15mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 9.5pt;
+      line-height: 1.62;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.7rem; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 15pt; font-weight: 700; letter-spacing: 0.15em; }
+    .doc-header .doc-no { font-size: 8.5pt; color: var(--ink-light); text-align: right; line-height: 1.6; }
+    .doc-header .doc-no b { color: var(--ink); font-weight: 500; margin-left: 0.4em; }
+
+    /* 職位基本資訊 */
+    .position { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.3rem 1.2rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.7rem; margin-bottom: 1.1rem; font-size: 9.5pt; }
+    .position span { color: var(--ink-light); font-size: 8pt; display: block; }
+
+    /* 區塊 */
+    section { margin-bottom: 1.05rem; }
+    h2 {
+      font-size: 9.5pt; font-weight: 700; letter-spacing: 0.25em;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.5rem;
+    }
+    p { margin-bottom: 0.5rem; text-align: justify; }
+    ul { padding-left: 1.6rem; margin-bottom: 0.4rem; }
+    li { margin-bottom: 0.1rem; }
+
+    /* 職務目的 */
+    .purpose { background: var(--bg-soft); padding: 0.6rem 1rem; font-size: 9.5pt; }
+
+    /* 表格 */
+    table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.3rem 0.5rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.35rem 0.5rem; vertical-align: top; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* 資格雙欄 */
+    .quals { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .quals h3 { font-size: 8.5pt; font-weight: 700; letter-spacing: 0.2em; color: var(--accent); border-bottom: 1px solid var(--rule); padding-bottom: 0.2rem; margin-bottom: 0.4rem; }
+
+    /* 工作條件 */
+    .conditions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.3rem 1.2rem; font-size: 9.5pt; }
+    .conditions span { color: var(--ink-light); font-size: 8pt; display: block; }
+
+    /* 簽核 */
+    .signoff { display: flex; gap: 2.5rem; margin-top: 1rem; }
+    .signoff div { flex: 1; border-top: 1px solid var(--ink); padding-top: 0.3rem; font-size: 8.5pt; color: var(--ink-light); }
+
+    .doc-footer { margin-top: 0.8rem; padding-top: 0.4rem; border-top: 1px solid var(--rule); font-size: 7.5pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    section, table, .quals, .signoff { break-inside: avoid; }
+    h2 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>職位說明書</h1>
+    <div class="doc-no">
+      <div>文件編號<b>JD-ENG-005</b></div>
+      <div>版本<b>v2.0</b>　生效日<b>2026-06-11</b></div>
+    </div>
+  </header>
+
+  <div class="position">
+    <div><span>職稱</span>資深後端工程師</div>
+    <div><span>部門</span>後端平台組</div>
+    <div><span>職等</span>P5</div>
+    <div><span>直屬主管</span>後端平台組經理</div>
+    <div><span>管理幅度</span>無直屬部屬（技術指導 1–2 名）</div>
+    <div><span>職務代理</span>同組資深工程師互為代理</div>
+    <div><span>編制</span>正職</div>
+    <div><span>薪資範圍</span>依職等敘薪辦法 P5 級距</div>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>職務目的</h2>
+      <p class="purpose">負責訂單與交易核心服務之架構設計、開發與可靠性，確保系統在大型促銷流量下穩定運作，並透過技術指導提升團隊整體工程品質，使核心模組不依賴單一人力。</p>
+    </section>
+
+    <section>
+      <h2>主要職責</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:5%">#</th>
+            <th>職責內容（動詞＋對象＋產出／衡量）</th>
+            <th class="num" style="width:9%">權重</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>設計與開發訂單核心服務功能，交付符合驗收標準之程式碼，重大缺陷率低於每千行 0.5 件。</td><td class="num">35%</td></tr>
+          <tr><td>2</td><td>規劃並執行容量驗證與壓測情境，確保每季大促前完成容量驗證報告。</td><td class="num">20%</td></tr>
+          <tr><td>3</td><td>參與 on-call 輪值並主導事故處理，SEV-2 以上事故於時限內產出不究責檢討報告。</td><td class="num">15%</td></tr>
+          <tr><td>4</td><td>撰寫與維護系統設計文件、SOP，確保核心模組至少兩人可獨立維運。</td><td class="num">15%</td></tr>
+          <tr><td>5</td><td>技術指導初階工程師，以程式碼審查與結對開發提升其獨立交付能力。</td><td class="num">15%</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>任職資格</h2>
+      <div class="quals">
+        <div>
+          <h3>必備條件</h3>
+          <ul>
+            <li>五年以上後端開發經驗，其中兩年以上交易或高併發系統。</li>
+            <li>精通至少一種主流後端語言，熟悉 PostgreSQL 與快取架構。</li>
+            <li>具正式環境事故處理與 on-call 經驗。</li>
+            <li>能獨立完成系統設計文件並主持設計審查。</li>
+          </ul>
+        </div>
+        <div>
+          <h3>加分條件</h3>
+          <ul>
+            <li>Kubernetes 維運或平台工程經驗。</li>
+            <li>帶領小型專案或指導工程師之經驗。</li>
+            <li>開源專案貢獻或技術社群分享經歷。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>核心職能</h2>
+      <ul>
+        <li>當責：問題追到根因並完成改善，不止於排除症狀。</li>
+        <li>溝通：能向非技術部門說明技術決策的取捨與影響。</li>
+        <li>協作：跨組依賴主動對齊時程，衝突時先提備案再上報。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>工作條件</h2>
+      <div class="conditions">
+        <div><span>工作地點</span>台北總部（每週可遠端二日）</div>
+        <div><span>出差需求</span>偶發（機房支援，每季 0–2 次）</div>
+        <div><span>值班要求</span>參與 on-call 輪值（約每六週一週）</div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="signoff">
+    <div>用人主管</div>
+    <div>部門最高主管</div>
+    <div>人資審核</div>
+  </div>
+
+  <footer class="doc-footer">
+    <span>JD-ENG-005 · v2.0 · 資深後端工程師</span>
+    <span>本說明書為敘薪評等與績效考核之職責依據，每年隨組織檢討更新</span>
+  </footer>
+
+</body>
+</html>

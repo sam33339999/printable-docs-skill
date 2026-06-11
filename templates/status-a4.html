@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  status-a4.html — 專案週進度報告 template（A4 直式，單頁）
+  ═══════════════════════════════════════════════════════════
+  用途：給主管或客戶的專案週進度報告，單頁可在一分鐘內讀完。
+  結構為：專案資訊與整體狀態、里程碑、本週完成、下週計劃、
+  風險與議題（含因應對策與負責人）。
+
+  手動使用：替換 .proj-info 與各區塊內容；里程碑列、風險列
+  （tbody tr）照樣式增刪即可。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 整體狀態僅限三檔：正常／注意／落後（.status-ok/.status-warn/.status-late），
+     狀態為注意或落後時，第一段必須寫明原因與恢復計畫
+  3. 「本週完成」寫已驗證的結果，不寫「進行中」事項
+  4. 維持單頁；禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>專案週報 第 24 週：訂單服務效能改造</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --warn: #8a6d1a;
+      --late: #8a2a1a;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 16mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.7;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.8rem; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 15pt; font-weight: 700; line-height: 1.4; }
+    .doc-header h1 small { display: block; font-size: 8.5pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.25em; }
+    .week { font-size: 11pt; font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+    .week small { display: block; font-size: 8pt; font-weight: 400; color: var(--ink-light); }
+
+    /* 專案資訊 + 狀態 */
+    .proj-info { display: flex; align-items: center; gap: 2rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.7rem; margin-bottom: 1.2rem; font-size: 9pt; }
+    .proj-info span { color: var(--ink-light); font-size: 8.5pt; margin-right: 0.6em; }
+    .status { margin-left: auto; font-size: 9.5pt; font-weight: 700; letter-spacing: 0.2em; padding: 0.1rem 0.8rem; border: 2px solid; }
+    .status-ok   { color: var(--accent); border-color: var(--accent); }
+    .status-warn { color: var(--warn); border-color: var(--warn); }
+    .status-late { color: var(--late); border-color: var(--late); }
+
+    /* 區塊 */
+    section { margin-bottom: 1.4rem; }
+    h2 {
+      font-size: 10pt; font-weight: 700; letter-spacing: 0.25em;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.6rem;
+    }
+    p { margin-bottom: 0.5rem; text-align: justify; }
+    ul { padding-left: 1.6rem; margin-bottom: 0.5rem; }
+
+    /* 摘要 */
+    .summary { background: var(--bg-soft); padding: 0.7rem 1rem; font-size: 9.5pt; }
+
+    /* 表格 */
+    table { width: 100%; border-collapse: collapse; margin: 0.3rem 0; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.35rem 0.5rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.4rem 0.5rem; vertical-align: top; }
+    .center { text-align: center; }
+    .t-warn { color: var(--warn); font-weight: 500; }
+    .t-late { color: var(--late); font-weight: 500; }
+
+    /* 文件尾 */
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 1.8rem; padding-top: 0.5rem; font-size: 8pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    /* 分頁控制 */
+    section, table { break-inside: avoid; }
+    h2 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>
+      <small>專案週進度報告</small>
+      訂單服務效能改造
+    </h1>
+    <div class="week">
+      2026 第 24 週
+      <small>06-08 至 06-12</small>
+    </div>
+  </header>
+
+  <div class="proj-info">
+    <div><span>專案經理</span>林佳蓉</div>
+    <div><span>本週報告人</span>陳柏宇</div>
+    <div><span>專案期間</span>2026-04-01 至 2026-09-30</div>
+    <div class="status status-warn">注　意</div>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>本週摘要</h2>
+      <p class="summary">整體進度落後計劃約一週，主因資料庫升級演練因 DBA 排程衝突順延。已調整後續壓測排程吸收延誤，里程碑 M2 預計仍可如期；若下週演練再度順延，M2 將受影響，已預先向贊助人提示。</p>
+    </section>
+
+    <section>
+      <h2>里程碑</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:22%">里程碑</th>
+            <th>內容</th>
+            <th style="width:14%" class="center">計劃日</th>
+            <th style="width:14%" class="center">預測日</th>
+            <th style="width:11%" class="center">狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>M1　設計定案</td><td>分片計數設計通過審查</td><td class="center">06-10</td><td class="center">06-10</td><td class="center">完成</td></tr>
+          <tr><td>M2　壓測通過</td><td>1,500 RPS 下錯誤率低於 0.1%</td><td class="center">07-03</td><td class="center t-warn">07-03</td><td class="center t-warn">注意</td></tr>
+          <tr><td>M3　灰度上線</td><td>10% 流量切換新路徑兩週無異常</td><td class="center">08-07</td><td class="center">08-07</td><td class="center">未開始</td></tr>
+          <tr><td>M4　全量上線</td><td>100% 流量切換，舊路徑下線</td><td class="center">09-11</td><td class="center">09-11</td><td class="center">未開始</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>本週完成</h2>
+      <ul>
+        <li>分片計數設計文件通過組內審查（M1 達成），故障回復章節依審查意見補齊。</li>
+        <li>k6 壓測腳本完成情境式流量模型主體，涵蓋下單、查詢、取消三條路徑。</li>
+        <li>訂單查詢逾時告警排查結案：快取節點記憶體不足，已擴容並補監控閾值。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>下週計劃</h2>
+      <ul>
+        <li>完成壓測腳本付款失敗重試情境並通過程式碼審查。</li>
+        <li>06-18 執行資料庫升級演練（DBA 已重新確認時段）。</li>
+        <li>開始撰寫分片計數資料遷移腳本，目標下下週完成首輪試遷。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>風險與議題</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:6%">#</th>
+            <th style="width:34%">風險／議題</th>
+            <th>因應對策</th>
+            <th style="width:13%">負責人</th>
+            <th style="width:11%" class="center">等級</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>DBA 排程再衝突將直接影響 M2</td>
+            <td>已向 DBA 主管取得 06-18 時段書面確認；備案為改以現版資料庫先跑第一輪壓測</td>
+            <td>林佳蓉</td>
+            <td class="center t-warn">中</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>促銷檔期（07-15）與灰度準備期重疊</td>
+            <td>灰度切換刻意安排在檔期後三週，期間凍結變更</td>
+            <td>陳柏宇</td>
+            <td class="center">低</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <footer class="doc-footer">
+    <span>訂單服務效能改造 · 2026 第 24 週進度報告</span>
+    <span>機密等級：內部使用</span>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  memory/mistakes-a4.html — 錯題本（A4 直式，單頁兩題）
+  ═══════════════════════════════════════════════════════════
+  用途：錯題登記與重做追蹤。每題一卡：題目、我的錯誤、正確解法、
+  錯因分類、重做排程（+3／+7／+15 天，接遺忘曲線）。
+  錯因分類欄逼自己歸因——「粗心」連續出現三次就不是粗心，
+  是流程問題（沒驗算、沒讀完題目）。
+
+  手動使用：列印後手寫，一頁兩題；第一題為填寫範例，
+  自用時整頁印空白卡即可（複製空白卡、刪除範例卡）。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 若使用者提供錯題，代填題目與正確解法；「我的錯誤」與
+     錯因分類一律留白——歸因必須由本人做才有效
+  3. 重做日期以登記日 +3／+7／+15 天換算填入，結果欄留白
+  4. 空白卡照樣式複製，每頁兩卡；禁用 emoji，維持編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>錯題本</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 12mm 14mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 9pt;
+      line-height: 1.5;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.45rem; margin-bottom: 0.7rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 13pt; font-weight: 700; }
+    .doc-header h1 small { font-size: 8pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.3em; margin-left: 0.8em; }
+    .doc-header .meta { font-size: 8.5pt; color: var(--ink-light); }
+    .doc-header .meta b { color: var(--ink); font-weight: 500; margin-left: 0.4em; }
+
+    /* 錯題卡 */
+    .card { border: 2px solid var(--ink); margin-bottom: 0.8rem; break-inside: avoid; }
+    .card-head { display: grid; grid-template-columns: 1.4fr 1.6fr 1fr 1fr; border-bottom: 1px solid var(--ink); background: var(--bg-soft); }
+    .card-head div { padding: 0.2rem 0.55rem; border-right: 1px solid var(--rule); font-size: 8.5pt; min-height: 8mm; }
+    .card-head div:last-child { border-right: none; }
+    .card-head span { color: var(--ink-light); font-size: 7pt; display: block; letter-spacing: 0.1em; }
+
+    .zone { padding: 0.25rem 0.55rem 0.35rem; border-bottom: 1px solid var(--rule); }
+    .zone h3 { font-size: 7.5pt; font-weight: 700; letter-spacing: 0.2em; color: var(--ink-light); margin-bottom: 0.1rem; }
+    .lines { background-image: repeating-linear-gradient(to bottom, transparent, transparent calc(7.5mm - 1px), var(--rule) calc(7.5mm - 1px), var(--rule) 7.5mm); background-position: 0 -1px; }
+    .q { height: 24mm; }
+    .pair { display: grid; grid-template-columns: 1fr 1.4fr; border-bottom: 1px solid var(--rule); }
+    .pair .zone { border-bottom: none; }
+    .pair .zone:first-child { border-right: 1px solid var(--rule); }
+    .a { height: 26mm; }
+
+    /* 錯因 */
+    .why { display: flex; align-items: center; gap: 1.1rem; padding: 0.3rem 0.55rem; border-bottom: 1px solid var(--rule); font-size: 8.5pt; flex-wrap: wrap; }
+    .why h3 { font-size: 7.5pt; font-weight: 700; letter-spacing: 0.2em; color: var(--ink-light); }
+    .cb { display: inline-block; width: 3.2mm; height: 3.2mm; border: 1px solid var(--ink); vertical-align: -0.5mm; margin-right: 0.35em; }
+    .cb.on { background: var(--ink); }
+    .why .other { flex: 1; border-bottom: 1px solid var(--rule); min-width: 8em; height: 1.2em; }
+
+    /* 重做排程 */
+    .redo { display: flex; align-items: center; gap: 0.9rem; padding: 0.3rem 0.55rem; font-size: 8.5pt; }
+    .redo h3 { font-size: 7.5pt; font-weight: 700; letter-spacing: 0.2em; color: var(--ink-light); }
+    .redo .slot { display: flex; align-items: baseline; gap: 0.4em; }
+    .redo .slot b { font-weight: 500; color: var(--ink-light); font-size: 8pt; }
+    .redo .slot .date { border-bottom: 1px solid var(--rule); min-width: 4.2em; display: inline-block; text-align: center; font-variant-numeric: tabular-nums; }
+    .redo .slot .res { border: 1px solid var(--ink); width: 5.5mm; height: 5.5mm; display: inline-block; vertical-align: middle; text-align: center; line-height: 5.2mm; }
+    .redo .hint { margin-left: auto; color: var(--ink-light); font-size: 7.5pt; }
+
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 0.2rem; padding-top: 0.3rem; font-size: 7.5pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>錯題本<small>歸因＋重做，訂正完才算數</small></h1>
+    <div class="meta">科目<b>微積分</b>　頁次<b>03</b></div>
+  </header>
+
+  <!-- 範例卡：自用時刪除，複製下方空白卡 -->
+  <div class="card">
+    <div class="card-head">
+      <div><span>編號／日期</span>M-021　06-11</div>
+      <div><span>來源（考卷／題庫／頁數）</span>期中考 第 7 題</div>
+      <div><span>章節</span>偏導數</div>
+      <div><span>配分／得分</span>10 ／ 2</div>
+    </div>
+    <div class="zone">
+      <h3>題目（抄題或剪貼，附條件）</h3>
+      <div class="lines q">求 f(x,y)=x²y+e^(xy) 在點 (1,0) 沿方向 v=(3,4) 的方向導數。</div>
+    </div>
+    <div class="pair">
+      <div class="zone">
+        <h3>我的錯誤（當時怎麼想的）</h3>
+        <div class="lines a">直接用 ∇f·v 就交卷，忘記 v 要先化成單位向量，結果差了 5 倍。</div>
+      </div>
+      <div class="zone">
+        <h3>正確解法（關鍵步驟）</h3>
+        <div class="lines a">∇f=(2xy+ye^(xy), x²+xe^(xy))，在 (1,0) 為 (0,2)；u=v/|v|=(3/5,4/5)；D_u f=∇f·u=8/5。</div>
+      </div>
+    </div>
+    <div class="why">
+      <h3>錯因</h3>
+      <span><span class="cb"></span>概念不清</span>
+      <span><span class="cb on"></span>漏步驟／沒驗算</span>
+      <span><span class="cb"></span>審題錯誤</span>
+      <span><span class="cb"></span>計算錯誤</span>
+      <span><span class="cb"></span>完全不會</span>
+      <span class="other"></span>
+    </div>
+    <div class="redo">
+      <h3>重做</h3>
+      <span class="slot"><b>+3 天</b><span class="date">06-14</span><span class="res"></span></span>
+      <span class="slot"><b>+7 天</b><span class="date">06-18</span><span class="res"></span></span>
+      <span class="slot"><b>+15 天</b><span class="date">06-26</span><span class="res"></span></span>
+      <span class="hint">結果填 ○ 全對／△ 卡住／× 重錯：× 就再排一輪</span>
+    </div>
+  </div>
+
+  <!-- 空白卡：照本卡複製 -->
+  <div class="card">
+    <div class="card-head">
+      <div><span>編號／日期</span></div>
+      <div><span>來源（考卷／題庫／頁數）</span></div>
+      <div><span>章節</span></div>
+      <div><span>配分／得分</span></div>
+    </div>
+    <div class="zone">
+      <h3>題目（抄題或剪貼，附條件）</h3>
+      <div class="lines q"></div>
+    </div>
+    <div class="pair">
+      <div class="zone">
+        <h3>我的錯誤（當時怎麼想的）</h3>
+        <div class="lines a"></div>
+      </div>
+      <div class="zone">
+        <h3>正確解法（關鍵步驟）</h3>
+        <div class="lines a"></div>
+      </div>
+    </div>
+    <div class="why">
+      <h3>錯因</h3>
+      <span><span class="cb"></span>概念不清</span>
+      <span><span class="cb"></span>漏步驟／沒驗算</span>
+      <span><span class="cb"></span>審題錯誤</span>
+      <span><span class="cb"></span>計算錯誤</span>
+      <span><span class="cb"></span>完全不會</span>
+      <span class="other"></span>
+    </div>
+    <div class="redo">
+      <h3>重做</h3>
+      <span class="slot"><b>+3 天</b><span class="date"></span><span class="res"></span></span>
+      <span class="slot"><b>+7 天</b><span class="date"></span><span class="res"></span></span>
+      <span class="slot"><b>+15 天</b><span class="date"></span><span class="res"></span></span>
+      <span class="hint">結果填 ○ 全對／△ 卡住／× 重錯：× 就再排一輪</span>
+    </div>
+  </div>
+
+  <footer class="doc-footer">
+    <span>錯題本 · 同一錯因連續出現三次＝流程問題，改流程不是改心態</span>
+    <span>考前只重做 △ 與 × 的題</span>
+  </footer>
+
+</body>
+</html>

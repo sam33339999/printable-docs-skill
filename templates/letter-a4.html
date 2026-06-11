@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  letter-a4.html — 公函／正式信函 template（A4 直式，單頁）
+  ═══════════════════════════════════════════════════════════
+  用途：公司對外正式函件（通知函、催告函、邀請函、感謝函），
+  以 Cmd+P 匯出 PDF 用印後寄發。結構為：公司信紙抬頭、發文
+  資訊、受文者、主旨、說明、結尾敬語、署名用印、正副本。
+
+  手動使用：替換 .letterhead、受文者與主旨說明內容；說明段
+  （ol li）可增刪。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 主旨一句話寫完，以「，請　查照。」「，敬請　惠覆。」等收尾
+  3. 說明分點敘述，一點一事；日期金額等關鍵資訊不可含糊
+  4. 維持單頁；禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>函 亙宇字第 1150611 號</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+      --font-display: 'Noto Serif TC', 'Songti TC', 'Noto Sans TC', 'Heiti TC', serif;
+    }
+    @page { size: A4; margin: 22mm 20mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 11pt;
+      line-height: 2.0;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 720px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 公司信紙抬頭 */
+    .letterhead { text-align: center; border-bottom: 2px solid var(--ink); padding-bottom: 0.9rem; margin-bottom: 1rem; }
+    .letterhead .co { font-family: var(--font-display); font-size: 17pt; font-weight: 700; letter-spacing: 0.3em; text-indent: 0.3em; }
+    .letterhead .co-en { font-size: 8pt; color: var(--ink-light); letter-spacing: 0.25em; margin-top: 0.1rem; }
+    .letterhead .doc-type { font-size: 13pt; font-weight: 700; letter-spacing: 1em; text-indent: 1em; margin-top: 0.6rem; }
+
+    /* 發文資訊 */
+    .meta { font-size: 9pt; line-height: 1.8; margin-bottom: 1.2rem; }
+    .meta div { display: flex; }
+    .meta span { color: var(--ink-light); width: 6em; flex-shrink: 0; }
+
+    /* 受文者 */
+    .recipient { font-size: 11pt; font-weight: 500; margin-bottom: 1rem; }
+
+    /* 主旨與說明 */
+    .subject { display: flex; margin-bottom: 0.8rem; }
+    .subject b { width: 3.5em; flex-shrink: 0; font-weight: 700; }
+    .subject p { flex: 1; text-align: justify; }
+    .body-block { display: flex; margin-bottom: 0.8rem; }
+    .body-block b { width: 3.5em; flex-shrink: 0; font-weight: 700; }
+    .body-block ol { flex: 1; padding-left: 1.8rem; }
+    .body-block ol li { text-align: justify; padding-left: 0.3rem; margin-bottom: 0.3rem; }
+
+    /* 結尾敬語 */
+    .closing { margin: 1.4rem 0 1.8rem; }
+
+    /* 署名 */
+    .signature { text-align: right; margin-bottom: 2rem; }
+    .signature .co-name { font-family: var(--font-display); font-size: 13pt; font-weight: 700; letter-spacing: 0.2em; }
+    .signature .rep { font-size: 10.5pt; margin-top: 0.3rem; }
+    .signature .seal-hint { display: inline-block; font-size: 8pt; color: var(--ink-light); border: 1px dashed var(--rule); padding: 0.8rem 1.2rem; margin-top: 0.6rem; letter-spacing: 0.2em; }
+
+    /* 正副本 */
+    .cc { border-top: 1px solid var(--rule); padding-top: 0.5rem; font-size: 9pt; line-height: 1.8; }
+    .cc div { display: flex; }
+    .cc span { color: var(--ink-light); width: 4em; flex-shrink: 0; }
+
+    .doc-footer { margin-top: 1.2rem; font-size: 8pt; color: var(--ink-light); text-align: center; }
+
+    .signature, .cc { break-inside: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="letterhead">
+    <div class="co">亙宇數位股份有限公司</div>
+    <div class="co-en">GENYU DIGITAL CO., LTD.</div>
+    <div class="doc-type">函</div>
+  </header>
+
+  <div class="meta">
+    <div><span>發文日期</span>中華民國 115 年 6 月 11 日</div>
+    <div><span>發文字號</span>亙宇字第 1150611 號</div>
+    <div><span>聯 絡 人</span>陳柏宇　02-2511-3300 分機 215　service@genyu.example.com</div>
+    <div><span>地　　址</span>104 台北市中山區南京東路二段 100 號 8 樓</div>
+  </div>
+
+  <p class="recipient">受文者：新銳製造股份有限公司</p>
+
+  <div class="subject">
+    <b>主旨：</b>
+    <p>有關貴我雙方「會員系統重構暨資料遷移服務」一案，檢送系統設計審查會議資料乙份，敬請　派員出席。</p>
+  </div>
+
+  <div class="body-block">
+    <b>說明：</b>
+    <ol>
+      <li>依據貴我雙方 115 年 5 月 20 日簽訂之服務契約第六條辦理。</li>
+      <li>系統設計審查會議訂於 115 年 6 月 24 日（星期三）下午 2 時，假本公司 8 樓第一會議室舉行，預計 2 小時；如需視訊出席，請於會前三日告知，以便提供連線資訊。</li>
+      <li>檢附會議議程及系統設計文件初稿各乙份，敬請於會前惠予審閱；如有修正意見，請於 6 月 22 日前以電子郵件回覆本公司聯絡人。</li>
+    </ol>
+  </div>
+
+  <p class="closing">敬陳　貴公司惠予配合辦理，至紉公誼。</p>
+
+  <div class="signature">
+    <div class="co-name">亙宇數位股份有限公司</div>
+    <div class="rep">董事長　張惟誠</div>
+    <div class="seal-hint">公　司　印　信</div>
+  </div>
+
+  <div class="cc">
+    <div><span>正本：</span>新銳製造股份有限公司</div>
+    <div><span>副本：</span>本公司產品部、後端平台組</div>
+    <div><span>附件：</span>會議議程乙份、系統設計文件初稿乙份</div>
+  </div>
+
+  <footer class="doc-footer">
+    本函未經用印不生效力
+  </footer>
+
+</body>
+</html>

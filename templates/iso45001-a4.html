@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  iso45001-a4.html — 危害鑑別與風險評估表 template（A4 橫式）
+  ═══════════════════════════════════════════════════════════
+  用途：ISO 45001 職業安全衛生管理系統之危害鑑別及風險評估
+  紀錄（對應條文 6.1.2），以 Cmd+P 匯出 PDF 供稽核留存。
+  @page 已指定 A4 橫式。結構為：文件管制資訊、風險評估基準
+  （可能性×嚴重度矩陣）、危害鑑別評估主表、簽核。
+
+  手動使用：替換管制資訊與評估列（tbody tr）；危害類型參考
+  欄位註記；每年至少檢討一次，製程變更時即時更新。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 風險等級＝可能性×嚴重度（各 1–3 分）：1–2 低、3–4 中、
+     6–9 高；中級以上必須填寫改善措施、負責人與期限
+  3. 危害描述要寫「情境＋後果」（如：搬運伺服器未使用推車，
+     致下背扭傷），不寫單詞「人因危害」了事
+  4. 改善後風險須重新評分且低於原風險；不得直接複製原分數
+  5. 禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>危害鑑別與風險評估表 OHS-RA-2026-01</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4 landscape; margin: 12mm 14mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 9pt;
+      line-height: 1.6;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 1080px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.6rem; margin-bottom: 0.6rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 14pt; font-weight: 700; }
+    .doc-header h1 small { display: block; font-size: 8pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.25em; }
+
+    /* 文件管制資訊 */
+    .control { display: grid; grid-template-columns: repeat(6, 1fr); border: 1px solid var(--ink); margin-bottom: 0.8rem; font-size: 8.5pt; }
+    .control div { padding: 0.25rem 0.5rem; border-right: 1px solid var(--rule); }
+    .control div:last-child { border-right: none; }
+    .control span { color: var(--ink-light); font-size: 7pt; display: block; letter-spacing: 0.1em; }
+    .control b { font-weight: 500; }
+
+    /* 評估基準 */
+    .criteria { display: flex; gap: 1.2rem; margin-bottom: 0.9rem; align-items: flex-start; }
+    .criteria h2 { font-size: 8.5pt; font-weight: 700; letter-spacing: 0.2em; margin-bottom: 0.3rem; }
+    .criteria .legend { font-size: 8pt; color: var(--ink-light); line-height: 1.7; flex: 1; }
+    .criteria .legend b { color: var(--ink); font-weight: 500; }
+    .matrix { border-collapse: collapse; font-size: 8pt; }
+    .matrix th, .matrix td { border: 1px solid var(--ink); padding: 0.15rem 0.5rem; text-align: center; }
+    .matrix th { font-weight: 500; font-size: 7.5pt; background: var(--bg-soft); }
+    .matrix .hi { background: var(--ink); color: #fff; font-weight: 700; }
+    .matrix .md { background: #d9d9d4; font-weight: 500; }
+
+    /* 主表 */
+    table.main { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
+    table.main th { text-align: left; font-weight: 500; font-size: 7.5pt; letter-spacing: 0.05em; border-bottom: 2px solid var(--ink); border-top: 2px solid var(--ink); padding: 0.3rem 0.4rem; background: var(--bg-soft); }
+    table.main td { border-bottom: 1px solid var(--rule); padding: 0.35rem 0.4rem; vertical-align: top; }
+    .center { text-align: center; }
+    .num { text-align: center; font-variant-numeric: tabular-nums; }
+    .risk-hi { font-weight: 700; }
+    .risk-md { font-weight: 500; }
+    td small { color: var(--ink-light); font-size: 7.5pt; display: block; }
+
+    /* 簽核 */
+    .signoff { display: flex; gap: 2.5rem; margin-top: 1.2rem; }
+    .signoff div { flex: 1; border-top: 1px solid var(--ink); padding-top: 0.3rem; font-size: 8pt; color: var(--ink-light); }
+
+    .doc-footer { margin-top: 0.9rem; padding-top: 0.4rem; border-top: 1px solid var(--rule); font-size: 7pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    .criteria, .signoff { break-inside: avoid; }
+    table.main tr { break-inside: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>
+      <small>ISO 45001 · 6.1.2 危害鑑別及風險與機會之評估</small>
+      危害鑑別與風險評估表
+    </h1>
+  </header>
+
+  <div class="control">
+    <div><span>文件編號</span><b>OHS-RA-2026-01</b></div>
+    <div><span>評估單位</span><b>資訊部（機房作業）</b></div>
+    <div><span>評估日期</span><b>2026-06-11</b></div>
+    <div><span>評估人員</span><b>職安管理員＋部門主管</b></div>
+    <div><span>版本</span><b>v1.2</b></div>
+    <div><span>下次檢討</span><b>2027-06（或製程變更時）</b></div>
+  </div>
+
+  <div class="criteria">
+    <div>
+      <h2>風險矩陣</h2>
+      <table class="matrix">
+        <tr><th>嚴重度＼可能性</th><th>1 不太可能</th><th>2 可能</th><th>3 極可能</th></tr>
+        <tr><th>3 重大（失能、住院）</th><td class="md">3 中</td><td class="hi">6 高</td><td class="hi">9 高</td></tr>
+        <tr><th>2 中度（醫療處置）</th><td>2 低</td><td class="md">4 中</td><td class="hi">6 高</td></tr>
+        <tr><th>1 輕微（急救即可）</th><td>1 低</td><td>2 低</td><td class="md">3 中</td></tr>
+      </table>
+    </div>
+    <div class="legend">
+      <b>風險等級與處理原則</b><br>
+      高（6–9）：立即採取改善措施，完成前應有暫時管制；中（3–4）：限期改善並追蹤；低（1–2）：維持現有措施，例行檢視。<br>
+      <b>危害類型參考</b>：物理性（噪音、電氣、墜落）、化學性、人因性（搬運、姿勢）、生物性、社會心理性（過勞、職場不法侵害——另依預防計畫管理）。
+    </div>
+  </div>
+
+  <table class="main">
+    <thead>
+      <tr>
+        <th style="width:3%" class="center">#</th>
+        <th style="width:10%">作業活動</th>
+        <th style="width:7%">危害類型</th>
+        <th style="width:17%">危害描述與可能後果</th>
+        <th style="width:13%">現有防護措施</th>
+        <th style="width:4%" class="center">可能性</th>
+        <th style="width:4%" class="center">嚴重度</th>
+        <th style="width:5%" class="center">風險</th>
+        <th style="width:16%">改善措施（中級以上必填）</th>
+        <th style="width:7%">負責人</th>
+        <th style="width:7%" class="center">期限</th>
+        <th style="width:5%" class="center">改善後</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="center">1</td>
+        <td>機房設備上下架</td>
+        <td>人因性</td>
+        <td>單人徒手搬運 25kg 伺服器上架至高層機櫃，致下背扭傷或砸傷腳部。</td>
+        <td>口頭要求兩人作業</td>
+        <td class="num">2</td>
+        <td class="num">2</td>
+        <td class="num risk-md">4 中</td>
+        <td>購置伺服器升降推車；修訂 SOP 明定 15kg 以上強制兩人＋推車作業並納入年度訓練。</td>
+        <td>資訊部 王大明</td>
+        <td class="center">2026-07-31</td>
+        <td class="num">2 低</td>
+      </tr>
+      <tr>
+        <td class="center">2</td>
+        <td>機櫃配電作業</td>
+        <td>物理性（電氣）</td>
+        <td>帶電狀態插拔 PDU 電源線，致電擊或電弧灼傷。</td>
+        <td>絕緣手套（使用率低）</td>
+        <td class="num">2</td>
+        <td class="num">3</td>
+        <td class="num risk-hi">6 高</td>
+        <td>修訂作業程序：配電作業一律斷電上鎖掛牌（LOTO）；增設迴路標示；暫時管制——完成前配電作業須職安管理員到場。</td>
+        <td>職安 李安全</td>
+        <td class="center">2026-06-30</td>
+        <td class="num">2 低</td>
+      </tr>
+      <tr>
+        <td class="center">3</td>
+        <td>深夜值班與緊急召回</td>
+        <td>社會心理性</td>
+        <td>連續值班與深夜處理事故致疲勞累積，異常工作負荷促發疾病。</td>
+        <td>值班輪替表</td>
+        <td class="num">2</td>
+        <td class="num">2</td>
+        <td class="num risk-md">4 中</td>
+        <td>值班後保障 11 小時休息始得出勤；每月值班時數統計納入過負荷預防計畫，逾警戒值安排臨場健康服務醫師面談。</td>
+        <td>人資 黃心怡</td>
+        <td class="center">2026-08-31</td>
+        <td class="num">2 低</td>
+      </tr>
+      <tr>
+        <td class="center">4</td>
+        <td>機房巡檢</td>
+        <td>物理性（噪音）</td>
+        <td>長時間於機房（約 78dBA）巡檢未戴聽力防護，致聽力疲勞。</td>
+        <td>入口張貼噪音警示</td>
+        <td class="num">1</td>
+        <td class="num">1</td>
+        <td class="num">1 低</td>
+        <td>—（維持現有措施，巡檢動線備有耳塞）</td>
+        <td>—</td>
+        <td class="center">—</td>
+        <td class="num">—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="signoff">
+    <div>評估人員</div>
+    <div>部門主管</div>
+    <div>職業安全衛生管理員</div>
+    <div>雇主或代理人核定</div>
+  </div>
+
+  <footer class="doc-footer">
+    <span>OHS-RA-2026-01 · v1.2 · 危害鑑別與風險評估表</span>
+    <span>管制文件：本表為 ISO 45001 稽核紀錄，保存三年以上</span>
+  </footer>
+
+</body>
+</html>

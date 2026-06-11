@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  certificate-a4.html — 感謝狀／證書 template（A4 橫式，單頁）
+  ═══════════════════════════════════════════════════════════
+  用途：感謝狀、結業證書、獎狀等，以 Cmd+P 匯出 PDF 用印。
+  @page 已指定 A4 橫式，列印時不必手動選橫向。
+  結構為：雙線框、文件種類、受獎者、事由、落款與用印、日期。
+
+  手動使用：替換 .cert-type（感謝狀／結業證書／獎狀）、受獎者
+  與事由文字；事由保持兩至三行最美觀。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 事由文字以「茲感謝／茲證明　某某　……」起句，結尾「特頒此狀，
+     以資感謝／以資證明」，全文不超過三行
+  3. 日期用中華民國紀年；禁用 emoji 與任何裝飾圖案，框線即是全部裝飾
+  4. 維持單頁橫式，內容不可溢出框線
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>感謝狀</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --frame: #1e4e79;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+      --font-display: 'Noto Serif TC', 'Songti TC', 'Noto Sans TC', 'Heiti TC', serif;
+    }
+    @page { size: A4 landscape; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font-display);
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .sheet {
+      width: 297mm; height: 209mm;
+      padding: 12mm;
+      position: relative;
+      page-break-after: avoid;
+    }
+    @media screen {
+      body { background: #888; padding: 2rem 0; height: auto; }
+      .sheet { margin: 0 auto; background: #fff; box-shadow: 0 4px 24px rgba(0,0,0,0.35); }
+    }
+
+    /* 雙線框：外粗內細 */
+    .frame-outer {
+      width: 100%; height: 100%;
+      border: 2.5pt solid var(--frame);
+      padding: 2.2mm;
+    }
+    .frame-inner {
+      width: 100%; height: 100%;
+      border: 0.6pt solid var(--frame);
+      padding: 14mm 20mm 10mm;
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    .cert-no { align-self: flex-end; font-family: var(--font-main); font-size: 8.5pt; color: var(--ink-light); letter-spacing: 0.15em; }
+
+    .cert-type {
+      font-size: 42pt; font-weight: 900;
+      letter-spacing: 0.9em; text-indent: 0.9em;
+      margin-top: 6mm;
+    }
+    .cert-type-en { font-family: var(--font-main); font-size: 9pt; letter-spacing: 0.6em; text-indent: 0.6em; color: var(--ink-light); margin-top: 2mm; }
+
+    .recipient {
+      font-size: 22pt; font-weight: 700;
+      letter-spacing: 0.25em;
+      border-bottom: 1.2pt solid var(--ink);
+      padding: 0 2em 1mm;
+      margin-top: 11mm;
+    }
+    .recipient small { font-size: 11pt; font-weight: 600; letter-spacing: 0.1em; color: var(--ink-light); }
+
+    .citation {
+      font-size: 13.5pt; line-height: 2.3;
+      text-align: justify;
+      max-width: 185mm;
+      margin-top: 9mm;
+    }
+
+    /* 落款 */
+    .issuer {
+      margin-top: auto;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      width: 100%;
+    }
+    .issuer .seal-hint {
+      font-family: var(--font-main); font-size: 8pt; color: var(--ink-light);
+      border: 1px dashed #bbb; padding: 9mm 6mm; letter-spacing: 0.3em;
+      writing-mode: vertical-rl;
+    }
+    .issuer .who { text-align: center; }
+    .issuer .who .co { font-size: 17pt; font-weight: 700; letter-spacing: 0.3em; }
+    .issuer .who .rep { font-size: 13pt; margin-top: 2mm; letter-spacing: 0.2em; }
+    .issuer .date { font-size: 11.5pt; letter-spacing: 0.25em; }
+  </style>
+</head>
+<body>
+
+  <div class="sheet">
+    <div class="frame-outer">
+      <div class="frame-inner">
+
+        <span class="cert-no">亙感字第 2026-007 號</span>
+
+        <h1 class="cert-type">感謝狀</h1>
+        <p class="cert-type-en">CERTIFICATE OF APPRECIATION</p>
+
+        <p class="recipient">新銳製造股份有限公司　<small>周建宏 總經理</small></p>
+
+        <p class="citation">茲感謝　貴公司於本公司智慧製造數據平台開發期間，慨允提供示範場域與專業指導，使平台得以順利完成驗證並如期發布，貢獻卓著，特頒此狀，以資感謝。</p>
+
+        <div class="issuer">
+          <span class="seal-hint">公司印信</span>
+          <div class="who">
+            <div class="co">亙宇數位股份有限公司</div>
+            <div class="rep">董事長　張惟誠</div>
+          </div>
+          <span class="date">中華民國 115 年 6 月 11 日</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

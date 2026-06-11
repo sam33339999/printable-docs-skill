@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  memory/sq3r-a4.html — SQ3R 閱讀工作表（A4 直式，單頁）
+  ═══════════════════════════════════════════════════════════
+  用途：SQ3R 閱讀法（Survey 瀏覽、Question 提問、Read 閱讀、
+  Recite 背誦、Review 複習）工作表，每章一張。核心是
+  「帶著問題讀」：先把標題改寫成問題，讀的時候找答案，
+  讀完合上書憑記憶作答。
+
+  手動使用：列印後手寫；S 與 Q 在翻開內文「之前」完成，
+  這個順序是方法的關鍵，不要先讀再補。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 若使用者提供章節目錄，可代填 Q 欄（把各節標題改寫成
+     問題）；「答案要點」「背誦」「複習」欄一律留白，
+     那是讀者自己的工作
+  3. 問題要可回答、具體（「X 與 Y 差在哪」優於「了解 X」）
+  4. 維持單頁；禁用 emoji 與裝飾性元素，維持編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQ3R 閱讀工作表</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 12mm 14mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 9pt;
+      line-height: 1.5;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 頁首 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.45rem; margin-bottom: 0.6rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 13pt; font-weight: 700; }
+    .doc-header h1 small { font-size: 8pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.25em; margin-left: 0.8em; }
+    .doc-header .meta { font-size: 8.5pt; color: var(--ink-light); }
+    .doc-header .meta b { display: inline-block; color: var(--ink); font-weight: 500; border-bottom: 1px solid var(--rule); min-width: 8em; margin: 0 1em 0 0.4em; }
+
+    /* 步驟區 */
+    section { border: 1px solid var(--ink); margin-bottom: 0.55rem; break-inside: avoid; }
+    section h2 { display: flex; align-items: baseline; gap: 0.7em; font-size: 9pt; font-weight: 700; border-bottom: 1px solid var(--rule); padding: 0.22rem 0.55rem; }
+    section h2 .step { color: var(--accent); letter-spacing: 0.05em; font-size: 8.5pt; min-width: 5.5em; }
+    section h2 small { font-weight: 400; font-size: 7.5pt; color: var(--ink-light); margin-left: auto; text-align: right; }
+    .pad { padding: 0.3rem 0.55rem 0.45rem; }
+    .lines { background-image: repeating-linear-gradient(to bottom, transparent, transparent calc(8mm - 1px), var(--rule) calc(8mm - 1px), var(--rule) 8mm); }
+
+    /* 瀏覽清單 */
+    .scan { display: flex; gap: 1.3rem; font-size: 8pt; color: var(--ink-light); margin-bottom: 0.25rem; flex-wrap: wrap; }
+    .cb { display: inline-block; width: 3mm; height: 3mm; border: 1px solid var(--ink); vertical-align: -0.3mm; margin-right: 0.3em; }
+
+    /* Q/R 表 */
+    table { width: 100%; border-collapse: collapse; }
+    th { font-weight: 500; font-size: 7.5pt; letter-spacing: 0.08em; color: var(--ink-light); border-bottom: 1px solid var(--ink); padding: 0.2rem 0.45rem; text-align: left; }
+    th.c { text-align: center; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.25rem 0.45rem; height: 13mm; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    .idx { text-align: center; color: var(--ink-light); font-variant-numeric: tabular-nums; width: 5%; }
+    .self { width: 8%; border-left: 1px solid var(--rule); text-align: center; vertical-align: middle; }
+    .self span { display: inline-block; border: 1px solid var(--ink); width: 4.5mm; height: 4.5mm; }
+
+    .review-row { display: flex; gap: 1.6rem; align-items: baseline; font-size: 8.5pt; }
+    .review-row .slot { display: inline-flex; align-items: baseline; gap: 0.35em; }
+    .review-row .slot i { font-style: normal; color: var(--ink-light); font-size: 8pt; }
+    .review-row .slot span { border-bottom: 1px solid var(--rule); min-width: 5em; display: inline-block; }
+    .review-row .hint { margin-left: auto; font-size: 7.5pt; color: var(--ink-light); }
+
+    .doc-footer { border-top: 1px solid var(--rule); padding-top: 0.3rem; font-size: 7.5pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>SQ3R 閱讀工作表<small>帶著問題讀，每章一張</small></h1>
+    <div class="meta">書名／章節<b></b>頁數<b style="min-width:4em"></b>日期<b style="min-width:4.5em"></b></div>
+  </header>
+
+  <section>
+    <h2><span class="step">S　瀏覽</span>翻開內文前，先花五分鐘掃過<small>還不准逐字讀</small></h2>
+    <div class="pad">
+      <div class="scan">
+        <span><span class="cb"></span>章節標題與小標</span>
+        <span><span class="cb"></span>圖、表、粗體字</span>
+        <span><span class="cb"></span>章首導言</span>
+        <span><span class="cb"></span>章末摘要與習題</span>
+      </div>
+      <div style="font-size:7.5pt;color:var(--ink-light)">掃完用一句話猜：這章在講什麼、跟上一章什麼關係——</div>
+      <div class="lines" style="height:16mm"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="step">Q＋R　提問與閱讀</span>把每個小標改寫成問題，再帶著問題讀內文找答案<small>左欄讀前寫，右欄邊讀邊寫</small></h2>
+    <div class="pad" style="padding-top:0.1rem">
+      <table>
+        <thead>
+          <tr>
+            <th class="c">#</th>
+            <th style="width:40%">問題（讀之前，把小標改成問句）</th>
+            <th>答案要點（讀的時候，用自己的話）</th>
+            <th class="c">背誦</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="idx">1</td><td></td><td></td><td class="self"><span></span></td></tr>
+          <tr><td class="idx">2</td><td></td><td></td><td class="self"><span></span></td></tr>
+          <tr><td class="idx">3</td><td></td><td></td><td class="self"><span></span></td></tr>
+          <tr><td class="idx">4</td><td></td><td></td><td class="self"><span></span></td></tr>
+          <tr><td class="idx">5</td><td></td><td></td><td class="self"><span></span></td></tr>
+          <tr><td class="idx">6</td><td></td><td></td><td class="self"><span></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="step">R　背誦</span>合上書，遮住右欄，逐題憑記憶口頭作答<small>答得出 ○、卡住 ×，記在上表「背誦」格</small></h2>
+    <div class="pad">
+      <div style="font-size:7.5pt;color:var(--ink-light)">× 的題回去重讀該段，這裡記下反覆卡住的點——</div>
+      <div class="lines" style="height:16mm"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="step">R　複習</span>之後遮右欄再自考，只重讀答錯的段落<small>日期照遺忘曲線排</small></h2>
+    <div class="pad">
+      <div class="review-row">
+        <span class="slot"><i>+1 天</i><span></span></span>
+        <span class="slot"><i>+7 天</i><span></span></span>
+        <span class="slot"><i>考前</i><span></span></span>
+        <span class="hint">每次複習在格內記 ○×，連兩次全 ○ 此章退役</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="doc-footer">
+    <span>SQ3R 閱讀工作表 · S 與 Q 必須在讀內文之前完成</span>
+    <span>搭配 review-cycle-a4（排程）與 recall-a4（自測）使用</span>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  proposal-a4.html — 提案書／SOW template（A4 直式，多頁）
+  ═══════════════════════════════════════════════════════════
+  用途：給客戶的提案書或工作說明書（SOW），以 Cmd+P 匯出 PDF。
+  結構為：公司抬頭、提案標題、背景與目標、方案說明、工作範圍
+  （含交付物）、時程、報價摘要、雙方權責、有效期限。
+
+  手動使用：替換 .letterhead 公司資訊與各 section 內容；
+  工作範圍列、里程碑列（tbody tr）照樣式增刪即可。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 工作範圍每一項都要寫明交付物與驗收方式，不寫「等」「相關事宜」
+  3. 報價摘要金額加千分位、靠右對齊（沿用 .num），需與明細加總一致
+  4. 禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>提案書 P-2026-031</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+      --font-display: 'Noto Serif TC', 'Songti TC', 'Noto Sans TC', 'Heiti TC', serif;
+    }
+    @page { size: A4; margin: 20mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10.5pt;
+      line-height: 1.85;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 公司抬頭 */
+    .letterhead { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--ink); padding-bottom: 0.8rem; margin-bottom: 1.4rem; }
+    .letterhead .co { font-size: 13pt; font-weight: 700; letter-spacing: 0.08em; }
+    .letterhead .co small { display: block; font-size: 7.5pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.2em; }
+    .letterhead .contact { text-align: right; font-size: 8pt; color: var(--ink-light); line-height: 1.6; }
+
+    /* 提案標題 */
+    .doc-header { margin-bottom: 0.4rem; }
+    .doc-kicker { font-size: 8.5pt; letter-spacing: 0.35em; color: var(--ink-light); margin-bottom: 0.5rem; }
+    .doc-header h1 { font-family: var(--font-display); font-size: 20pt; font-weight: 700; line-height: 1.4; }
+    .doc-meta { display: flex; gap: 2.5rem; border-bottom: 1px solid var(--rule); padding: 0.5rem 0; margin-bottom: 2rem; font-size: 8.5pt; color: var(--ink-light); }
+    .doc-meta b { color: var(--ink); font-weight: 500; margin-left: 0.5em; }
+
+    /* 章節 */
+    section { margin-bottom: 2.2rem; }
+    h2 {
+      font-size: 13pt; font-weight: 700;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.9rem;
+    }
+    h3 { font-size: 11pt; font-weight: 500; color: var(--accent); margin: 1.3rem 0 0.5rem; }
+    p { margin-bottom: 0.7rem; text-align: justify; }
+    ul, ol { padding-left: 1.6rem; margin-bottom: 0.7rem; }
+
+    /* 表格 */
+    table { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.4rem 0.6rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.45rem 0.6rem; vertical-align: top; }
+    td small { color: var(--ink-light); font-size: 8pt; display: block; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .center { text-align: center; }
+
+    /* 報價摘要合計 */
+    .totals { width: 64mm; margin-left: auto; margin-top: 0.4rem; font-size: 9.5pt; }
+    .totals div { display: flex; justify-content: space-between; padding: 0.25rem 0.5rem; }
+    .totals .grand { border-top: 2px solid var(--ink); font-size: 11pt; font-weight: 700; margin-top: 0.2rem; padding-top: 0.45rem; }
+
+    /* 重點框 */
+    .note { border: 1px solid var(--ink); padding: 0.7rem 1rem; margin: 1rem 0; font-size: 9.5pt; }
+    .note > b:first-child { display: block; font-size: 8.5pt; letter-spacing: 0.25em; color: var(--accent); margin-bottom: 0.25rem; }
+
+    /* 文件尾 */
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 3rem; padding-top: 0.6rem; font-size: 8pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    /* 分頁控制 */
+    section, table, .note, .totals { break-inside: avoid; }
+    h2, h3 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="letterhead">
+    <div class="co">
+      亙宇數位股份有限公司
+      <small>GENYU DIGITAL CO., LTD.</small>
+    </div>
+    <div class="contact">
+      統一編號 24668357<br>
+      台北市中山區南京東路二段 100 號 8 樓<br>
+      02-2511-3300 · service@genyu.example.com
+    </div>
+  </header>
+
+  <div class="doc-header">
+    <p class="doc-kicker">提 案 書</p>
+    <h1>會員系統重構暨資料遷移服務提案</h1>
+  </div>
+  <div class="doc-meta">
+    <span>提案編號<b>P-2026-031</b></span>
+    <span>提案對象<b>新銳製造股份有限公司</b></span>
+    <span>提案日期<b>2026-06-11</b></span>
+    <span>有效期限<b>2026-07-31</b></span>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>1. 背景與目標</h2>
+      <p>貴公司現行會員系統建置於 2018 年，隨會員數成長至 42 萬，已出現批次作業逾時、促銷期間查詢延遲、新功能開發周期過長等問題。本提案目標為：在不中斷既有服務的前提下，於六個月內完成系統重構與全量資料遷移，並將促銷高峰的查詢 P95 延遲控制在 300 毫秒以內。</p>
+      <div class="note">
+        <b>提案重點</b>
+        採「雙軌並行、分批切換」策略：新舊系統並行六週，依會員分群分四批切換，任一批次出現異常可於 30 分鐘內回切，將營運風險降至最低。
+      </div>
+    </section>
+
+    <section>
+      <h2>2. 方案說明</h2>
+      <h3>2.1 系統架構</h3>
+      <p>新系統採服務化架構，將會員資料、權益計算、通知發送拆分為獨立服務，以 API 閘道統一對外。資料庫由單體 MySQL 遷移至 PostgreSQL，並導入讀寫分離與快取層。</p>
+      <h3>2.2 資料遷移</h3>
+      <p>遷移採「全量初始 ＋ 異動同步」模式：先完成歷史資料全量搬遷與比對，再以異動日誌持續同步至切換日。每批切換前執行三輪資料一致性核驗，比對結果作為切換放行條件。</p>
+    </section>
+
+    <section>
+      <h2>3. 工作範圍與交付物</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:6%">#</th>
+            <th style="width:24%">工作項目</th>
+            <th>內容說明</th>
+            <th style="width:26%">交付物與驗收方式</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>需求確認與系統設計</td>
+            <td>既有功能盤點、新架構設計、資料模型設計</td>
+            <td>系統設計文件；經貴我雙方設計審查會議通過</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>核心服務開發</td>
+            <td>會員、權益、通知三項服務與 API 閘道</td>
+            <td>通過全部驗收測試案例（雙方共同擬定，約 120 條）</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>資料遷移</td>
+            <td>全量搬遷、異動同步、四批分群切換</td>
+            <td>每批一致性核驗報告，差異筆數為零</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>上線與保固</td>
+            <td>切換執行、監控建置、上線後三個月保固</td>
+            <td>監控儀表板；保固期內缺陷修復回應時間 4 小時內</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>不含項目：行動 App 改版、客服系統整合、歷史訂單系統之改造。如有需要另案報價。</p>
+    </section>
+
+    <section>
+      <h2>4. 時程規劃</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:20%">里程碑</th>
+            <th>內容</th>
+            <th style="width:18%" class="center">預定完成</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>M1　設計完成</td><td>系統設計文件通過審查</td><td class="center">簽約後第 6 週</td></tr>
+          <tr><td>M2　開發完成</td><td>三項服務通過驗收測試</td><td class="center">簽約後第 16 週</td></tr>
+          <tr><td>M3　遷移完成</td><td>四批切換完成，舊系統唯讀封存</td><td class="center">簽約後第 22 週</td></tr>
+          <tr><td>M4　結案</td><td>保固期滿，交付完整文件與原始碼</td><td class="center">M3 後三個月</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>5. 報價摘要</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:6%">#</th>
+            <th>項目</th>
+            <th class="num" style="width:20%">金額（NT$）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>需求確認與系統設計</td><td class="num">420,000</td></tr>
+          <tr><td>2</td><td>核心服務開發</td><td class="num">1,680,000</td></tr>
+          <tr><td>3</td><td>資料遷移</td><td class="num">560,000</td></tr>
+          <tr><td>4</td><td>上線與保固（三個月）</td><td class="num">240,000</td></tr>
+        </tbody>
+      </table>
+      <div class="totals">
+        <div><span>小計</span><span>2,900,000</span></div>
+        <div><span>營業稅 5%</span><span>145,000</span></div>
+        <div class="grand"><span>總計 NT$</span><span>3,045,000</span></div>
+      </div>
+      <p>付款條件：簽約 30%、M1 通過 20%、M2 通過 30%、M3 通過 20%。</p>
+    </section>
+
+    <section>
+      <h2>6. 雙方權責</h2>
+      <ul>
+        <li>貴公司：指派專案窗口、於設計與驗收階段安排業務單位參與、提供既有系統文件與測試環境存取權限。</li>
+        <li>本公司：依時程交付各里程碑成果、每週提供進度報告、切換期間提供現場待命支援。</li>
+        <li>需求變更：經雙方書面確認後執行，影響時程或費用者於變更單中載明。</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="doc-footer">
+    <span>會員系統重構暨資料遷移服務提案 · P-2026-031</span>
+    <span>本提案內容屬商業機密，未經同意請勿轉發第三方</span>
+  </footer>
+
+</body>
+</html>

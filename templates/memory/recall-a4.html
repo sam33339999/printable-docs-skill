@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  memory/recall-a4.html — 主動回憶自測表（A4 直式，單頁）
+  ═══════════════════════════════════════════════════════════
+  用途：主動回憶（Active Recall）兩欄自測表。左欄問題、
+  右欄答案，沿中央虛線向後對折即可遮住答案自考；
+  右側三小格記錄三輪自測結果，搭配遺忘曲線複習表排輪次。
+
+  手動使用：列印後手寫，或先打好 Q/A 再印。問題要寫成
+  「需要回想才能答」的形式（為什麼／差別／步驟），
+  不要抄成填空題。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 由教材產生 Q/A 時：問題必須考「理解與提取」（為什麼、
+     比較、什麼情況用），禁止是非題與一字填空；答案寫要點
+     而非整段課文，一格放不下就拆成兩題
+  3. 一頁以 12 題為上限，超過就分頁，不要縮小字級；
+     自測記錄格（R1–R3）一律留白
+  4. 維持單頁版面與中央折線；禁用 emoji，維持編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>主動回憶自測表</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 13mm 13mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 9pt;
+      line-height: 1.5;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.45rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 13pt; font-weight: 700; }
+    .doc-header h1 small { font-size: 8pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.3em; margin-left: 0.8em; }
+    .doc-header .meta { font-size: 8.5pt; color: var(--ink-light); }
+    .doc-header .meta b { color: var(--ink); font-weight: 500; margin-left: 0.4em; }
+
+    .howto { font-size: 8pt; color: var(--ink-light); border-bottom: 1px solid var(--rule); padding-bottom: 0.4rem; margin-bottom: 0.5rem; }
+    .howto b { color: var(--ink); font-weight: 500; }
+
+    /* 主表 */
+    table { width: 100%; border-collapse: collapse; }
+    th { font-weight: 500; font-size: 7.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.25rem 0.4rem; text-align: left; }
+    th.c { text-align: center; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.35rem 0.45rem; vertical-align: top; min-height: 16mm; height: 17mm; }
+    .idx { text-align: center; color: var(--ink-light); font-variant-numeric: tabular-nums; width: 4%; }
+    .q { width: 42%; }
+    .a { width: 42%; border-left: 1.5px dashed var(--ink); }
+    th.a-h { border-left: 1.5px dashed var(--ink); }
+    .a small, .q small { color: var(--ink-light); font-size: 7.5pt; display: block; }
+    .self { width: 12%; border-left: 1px solid var(--rule); text-align: center; vertical-align: middle; }
+    .self .res { display: inline-block; border: 1px solid var(--ink); width: 5mm; height: 5mm; margin: 0 0.5mm; }
+    .self .lbl { display: block; font-size: 6.5pt; color: var(--ink-light); letter-spacing: 0.15em; margin-bottom: 0.5mm; }
+
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 0.5rem; padding-top: 0.3rem; font-size: 7.5pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    table { break-inside: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>主動回憶自測表<small>Active Recall</small></h1>
+    <div class="meta">主題<b>計算機網路 ch5 傳輸層</b>　日期<b>2026-06-11</b></div>
+  </header>
+
+  <div class="howto">
+    用法：沿中央虛線<b>向後對折</b>遮住答案欄，逐題口頭作答後翻開核對；結果記在右欄（<b>○</b> 全對、<b>△</b> 部分、<b>×</b> 答不出）。三輪全 ○ 的題退役，△ 與 × 進下一輪——輪次日期照遺忘曲線複習表排。
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="c">#</th>
+        <th>問題（考理解，不考填空）</th>
+        <th class="a-h">答案要點</th>
+        <th class="c">自測記錄</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="idx">1</td>
+        <td class="q">TCP 建立連線為什麼需要三次握手，兩次不行的原因是什麼？</td>
+        <td class="a">雙方都要確認「我能送、對方能收」；兩次無法確認 client 的接收能力，且舊的重複 SYN 會被誤建連線。</td>
+        <td class="self"><span class="lbl">R1　R2　R3</span><span class="res"></span><span class="res"></span><span class="res"></span></td>
+      </tr>
+      <tr>
+        <td class="idx">2</td>
+        <td class="q">慢啟動和壅塞避免的差別是什麼？什麼事件會讓 TCP 從一個切到另一個？</td>
+        <td class="a">慢啟動指數成長、壅塞避免線性成長；cwnd 達 ssthresh 時切換，逾時則 ssthresh 減半並回到慢啟動。</td>
+        <td class="self"><span class="lbl">R1　R2　R3</span><span class="res"></span><span class="res"></span><span class="res"></span></td>
+      </tr>
+      <tr>
+        <td class="idx">3</td>
+        <td class="q">UDP 沒有可靠傳輸，為什麼 DNS、視訊串流反而選它？</td>
+        <td class="a">無握手延遲、無重傳隊頭阻塞、標頭小；應用層可自行決定要不要補可靠性（如 QUIC）。</td>
+        <td class="self"><span class="lbl">R1　R2　R3</span><span class="res"></span><span class="res"></span><span class="res"></span></td>
+      </tr>
+      <tr>
+        <td class="idx">4</td>
+        <td class="q">TIME_WAIT 狀態存在的目的是什麼？等多久、為什麼是這個長度？</td>
+        <td class="a">確保最後的 ACK 送達、讓舊封包在網路中消亡；等 2MSL，涵蓋一去一回的最大存活時間。</td>
+        <td class="self"><span class="lbl">R1　R2　R3</span><span class="res"></span><span class="res"></span><span class="res"></span></td>
+      </tr>
+      <tr>
+        <td class="idx">5</td>
+        <td class="q">流量控制和壅塞控制都在「踩煞車」，控制的對象有什麼不同？</td>
+        <td class="a">流量控制保護「接收端」（rwnd，接收緩衝區）；壅塞控制保護「網路」（cwnd）；實際視窗取兩者較小值。</td>
+        <td class="self"><span class="lbl">R1　R2　R3</span><span class="res"></span><span class="res"></span><span class="res"></span></td>
+      </tr>
+      <tr>
+        <td class="idx">6</td>
+        <td class="q">收到三個重複 ACK 時 TCP 做什麼？為什麼處理方式比逾時溫和？</td>
+        <td class="a">快速重傳＋快速恢復（cwnd 減半）；重複 ACK 代表後續封包仍在到達，網路沒有全面壅塞。</td>
+        <td class="self"><span class="lbl">R1　R2　R3</span><span class="res"></span><span class="res"></span><span class="res"></span></td>
+      </tr>
+      <tr>
+        <td class="idx">7</td>
+        <td class="q"></td>
+        <td class="a"></td>
+        <td class="self"><span class="lbl">R1　R2　R3</span><span class="res"></span><span class="res"></span><span class="res"></span></td>
+      </tr>
+      <tr>
+        <td class="idx">8</td>
+        <td class="q"></td>
+        <td class="a"></td>
+        <td class="self"><span class="lbl">R1　R2　R3</span><span class="res"></span><span class="res"></span><span class="res"></span></td>
+      </tr>
+      <tr>
+        <td class="idx">9</td>
+        <td class="q"></td>
+        <td class="a"></td>
+        <td class="self"><span class="lbl">R1　R2　R3</span><span class="res"></span><span class="res"></span><span class="res"></span></td>
+      </tr>
+      <tr>
+        <td class="idx">10</td>
+        <td class="q"></td>
+        <td class="a"></td>
+        <td class="self"><span class="lbl">R1　R2　R3</span><span class="res"></span><span class="res"></span><span class="res"></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer class="doc-footer">
+    <span>主動回憶自測表 · 重讀不算複習，答出來才算</span>
+    <span>三輪全 ○ 退役；× 連兩輪回教材重學</span>
+  </footer>
+
+</body>
+</html>

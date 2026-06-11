@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  quote-a4.html — 商務文件 template（報價單，A4 直式單頁）
+  ═══════════════════════════════════════════════════════════
+  用途：報價單。同一版型改標題與欄位後也適用請款單、出貨單等
+  有「抬頭＋對象資訊＋品項表＋簽名」結構的商務文件。
+
+  手動使用：替換公司抬頭（.letterhead）、客戶區（.bill-to）、
+  品項列（tbody tr）與金額；品項列可自由增刪。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 金額一律加千分位、靠右對齊（沿用 .num），稅率預設 5%
+  3. 總計金額需與品項小計、稅額一致，產出前自行驗算
+  4. 維持單頁：品項超過 15 列時改用附件清單，不要縮小字級
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>報價單 Q-2026-0087</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 16mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.7;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 公司抬頭 */
+    .letterhead { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--ink); padding-bottom: 0.8rem; }
+    .letterhead .co { font-size: 15pt; font-weight: 700; letter-spacing: 0.08em; }
+    .letterhead .co small { display: block; font-size: 8pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.2em; }
+    .letterhead .contact { text-align: right; font-size: 8pt; color: var(--ink-light); line-height: 1.6; }
+
+    /* 文件標題 + 編號區 */
+    .doc-row { display: flex; justify-content: space-between; align-items: flex-end; margin: 1.6rem 0 1.2rem; }
+    .doc-row h1 { font-size: 19pt; font-weight: 700; letter-spacing: 0.5em; }
+    .doc-no { font-size: 9pt; text-align: right; }
+    .doc-no span { color: var(--ink-light); margin-right: 0.7em; }
+    .doc-no b { font-weight: 500; }
+
+    /* 客戶區 */
+    .bill-to { border-top: 1px solid var(--ink); border-bottom: 1px solid var(--rule); padding: 0.7rem 0.2rem; margin-bottom: 1.4rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.3rem 2rem; font-size: 9.5pt; }
+    .bill-to span { color: var(--ink-light); font-size: 8pt; display: block; }
+
+    /* 品項表 */
+    table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.4rem 0.5rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.5rem; vertical-align: top; }
+    td small { color: var(--ink-light); font-size: 8pt; display: block; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* 金額合計 */
+    .totals { width: 64mm; margin-left: auto; margin-top: 0.6rem; font-size: 9.5pt; }
+    .totals div { display: flex; justify-content: space-between; padding: 0.25rem 0.5rem; }
+    .totals .grand { border-top: 2px solid var(--ink); font-size: 11pt; font-weight: 700; margin-top: 0.2rem; padding-top: 0.45rem; }
+
+    /* 條款 */
+    .terms { margin-top: 1.6rem; font-size: 8.5pt; color: var(--ink-light); }
+    .terms h2 { font-size: 8.5pt; color: var(--ink); letter-spacing: 0.25em; margin-bottom: 0.3rem; }
+    .terms ol { padding-left: 1.4rem; }
+
+    /* 簽名欄 */
+    .signatures { display: flex; gap: 3rem; margin-top: 2.8rem; }
+    .signatures div { flex: 1; border-top: 1px solid var(--ink); padding-top: 0.4rem; font-size: 8.5pt; color: var(--ink-light); }
+
+    .doc-footer { margin-top: 2rem; padding-top: 0.5rem; border-top: 1px solid var(--rule); font-size: 7.5pt; color: var(--ink-light); text-align: center; }
+
+    table, .totals, .signatures { break-inside: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="letterhead">
+    <div class="co">
+      亙宇數位股份有限公司
+      <small>GENYU DIGITAL CO., LTD.</small>
+    </div>
+    <div class="contact">
+      統一編號 24668357<br>
+      台北市中山區南京東路二段 100 號 8 樓<br>
+      02-2511-3300 · service@genyu.example.com
+    </div>
+  </header>
+
+  <div class="doc-row">
+    <h1>報價單</h1>
+    <div class="doc-no">
+      <div><span>報價編號</span><b>Q-2026-0087</b></div>
+      <div><span>報價日期</span><b>2026-06-11</b></div>
+      <div><span>有效期限</span><b>2026-07-11</b></div>
+    </div>
+  </div>
+
+  <div class="bill-to">
+    <div><span>客戶名稱</span>新銳製造股份有限公司</div>
+    <div><span>聯絡人</span>林佳蓉 經理</div>
+    <div><span>統一編號</span>53024187</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:6%">#</th>
+        <th>品項說明</th>
+        <th class="num" style="width:10%">數量</th>
+        <th class="num" style="width:8%">單位</th>
+        <th class="num" style="width:15%">單價</th>
+        <th class="num" style="width:15%">小計</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>官網改版設計與前端開發<small>含響應式版型 12 頁、CMS 串接</small></td>
+        <td class="num">1</td><td class="num">式</td>
+        <td class="num">480,000</td><td class="num">480,000</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>多語系建置（英文、日文）<small>含語系切換與內容匯入</small></td>
+        <td class="num">2</td><td class="num">語系</td>
+        <td class="num">60,000</td><td class="num">120,000</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>上線後維護服務<small>每月 8 小時，每季結算</small></td>
+        <td class="num">12</td><td class="num">月</td>
+        <td class="num">12,000</td><td class="num">144,000</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <div><span>小計</span><span>744,000</span></div>
+    <div><span>營業稅 5%</span><span>37,200</span></div>
+    <div class="grand"><span>總計 NT$</span><span>781,200</span></div>
+  </div>
+
+  <div class="terms">
+    <h2>條款說明</h2>
+    <ol>
+      <li>付款方式：簽約後支付 50%，驗收完成後支付尾款 50%，月付項目按季開立發票。</li>
+      <li>交付時程：合約生效後 10 週內完成第一、二項並進行驗收。</li>
+      <li>本報價含一次需求變更調整；逾範圍之變更另行報價。</li>
+    </ol>
+  </div>
+
+  <div class="signatures">
+    <div>報價人（亙宇數位）</div>
+    <div>客戶確認（簽名及日期）</div>
+  </div>
+
+  <footer class="doc-footer">
+    本報價單由亙宇數位股份有限公司開立，未經簽署確認前不構成合約義務。
+  </footer>
+
+</body>
+</html>

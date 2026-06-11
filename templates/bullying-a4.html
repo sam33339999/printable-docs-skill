@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  bullying-a4.html — 職場不法侵害（職場霸凌）申訴暨處理紀錄表
+  template（A4 直式）
+  ═══════════════════════════════════════════════════════════
+  用途：依職業安全衛生法「執行職務遭受不法侵害預防」之申訴
+  受理與調查處理紀錄，以 Cmd+P 匯出 PDF 填寫或歸檔。結構為：
+  受理資訊、申訴人／被申訴人資料、事件陳述、期望處理方式、
+  （以下由處理單位填寫）受理審查、調查紀錄、調查結果、
+  處理措施、簽核，附保密與禁止報復聲明。
+
+  手動使用：勾選類欄位以「■／□」表示；本表涉及個資與機密，
+  紙本流通需以彌封袋傳遞。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 事件陳述照申訴人原話記錄人事時地物，不加評價；
+     涉性騷擾者註明應依性別平等工作法程序另案處理
+  3. 調查結果僅限：成立／不成立／調解成立／不受理（附理由）
+  4. 全程記錄日期；受理至結案以 30 日為原則，逾期須註明原因
+  5. 禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>職場不法侵害申訴暨處理紀錄表</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 16mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.7;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.8rem; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 14.5pt; font-weight: 700; line-height: 1.45; }
+    .doc-header h1 small { display: block; font-size: 8pt; font-weight: 400; color: var(--ink-light); letter-spacing: 0.25em; }
+    .doc-header .conf { border: 2px solid var(--ink); font-size: 9pt; font-weight: 700; letter-spacing: 0.25em; padding: 0.15rem 0.8rem; white-space: nowrap; }
+
+    /* 受理資訊 */
+    .intake { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.2rem 1.5rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.6rem; margin-bottom: 1.1rem; font-size: 9.5pt; }
+    .intake span { color: var(--ink-light); font-size: 8pt; display: block; }
+
+    /* 區塊 */
+    section { margin-bottom: 1.3rem; }
+    h2 {
+      font-size: 10pt; font-weight: 700; letter-spacing: 0.2em;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.5rem;
+    }
+    p { margin-bottom: 0.5rem; text-align: justify; }
+
+    /* 分隔線：以下由處理單位填寫 */
+    .divider { text-align: center; font-size: 9pt; font-weight: 700; letter-spacing: 0.4em; color: var(--ink); border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); padding: 0.3rem 0; margin: 1.6rem 0 1.3rem; }
+
+    /* 資料格 */
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem 1.5rem; font-size: 9.5pt; border-bottom: 1px solid var(--rule); padding-bottom: 0.5rem; }
+    .fields.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+    .fields span { color: var(--ink-light); font-size: 8pt; display: block; }
+
+    /* 勾選列 */
+    .checks { font-size: 9.5pt; line-height: 2.1; }
+    .checks b { font-weight: 500; letter-spacing: 0.05em; margin-right: 1.2em; white-space: nowrap; }
+
+    /* 陳述欄 */
+    .statement { border: 1px solid var(--rule); min-height: 34mm; padding: 0.6rem 0.9rem; font-size: 9.5pt; }
+    .statement.short { min-height: 18mm; }
+
+    /* 表格 */
+    table { width: 100%; border-collapse: collapse; margin: 0.4rem 0; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.35rem 0.5rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.4rem 0.5rem; vertical-align: top; }
+    .center { text-align: center; }
+
+    /* 結果框 */
+    .verdict { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; margin: 0.5rem 0; }
+    .verdict div { border: 1px solid var(--ink); text-align: center; padding: 0.4rem 0; font-size: 9.5pt; letter-spacing: 0.15em; }
+    .verdict .checked { background: var(--ink); color: #fff; font-weight: 700; }
+
+    /* 聲明 */
+    .pledge { background: var(--bg-soft); padding: 0.7rem 1rem; font-size: 8.5pt; line-height: 1.8; color: var(--ink-light); }
+    .pledge b { color: var(--ink); display: block; font-size: 8.5pt; letter-spacing: 0.25em; margin-bottom: 0.2rem; }
+
+    /* 簽核 */
+    .signoff { display: flex; gap: 2.5rem; margin-top: 1.6rem; }
+    .signoff div { flex: 1; border-top: 1px solid var(--ink); padding-top: 0.35rem; font-size: 8.5pt; color: var(--ink-light); }
+
+    .doc-footer { margin-top: 1.4rem; padding-top: 0.5rem; border-top: 1px solid var(--rule); font-size: 7.5pt; color: var(--ink-light); text-align: center; }
+
+    section, table, .verdict, .signoff, .pledge { break-inside: avoid; }
+    h2 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>
+      <small>執行職務遭受不法侵害預防</small>
+      職場不法侵害申訴暨處理紀錄表
+    </h1>
+    <div class="conf">機密文件</div>
+  </header>
+
+  <div class="intake">
+    <div><span>案件編號</span>HB-2026-001</div>
+    <div><span>受理日期</span>2026-06-11</div>
+    <div><span>受理人（窗口）</span>人資部 黃心怡</div>
+    <div><span>受理管道</span>■ 申訴信箱　□ 專線　□ 當面　□ 主管轉知</div>
+    <div><span>結案期限（受理＋30 日）</span>2026-07-11</div>
+    <div><span>是否申請匿名</span>□ 是　■ 否</div>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>一、申訴人資料</h2>
+      <div class="fields cols3">
+        <div><span>姓名</span>（填寫或匿名代號）</div>
+        <div><span>部門／職稱</span>　</div>
+        <div><span>聯絡方式（保密）</span>　</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>二、被申訴人資料</h2>
+      <div class="fields cols3">
+        <div><span>姓名</span>　</div>
+        <div><span>部門／職稱</span>　</div>
+        <div><span>與申訴人關係</span>□ 主管　□ 同事　□ 部屬　□ 外部人員</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>三、事件陳述</h2>
+      <p class="checks">
+        <b>侵害類型（可複選）</b>
+        □ 言語侮辱、貶抑　□ 孤立、排擠　□ 過度或不當之工作要求　□ 肢體攻擊　□ 透過通訊軟體之騷擾　□ 其他＿＿＿＿
+      </p>
+      <p class="checks"><b>注意</b>涉性騷擾情節者，應依性別平等工作法所定程序另案處理，本表僅記錄移轉情形。</p>
+      <div class="statement">
+        <span style="color:var(--ink-light);font-size:8pt;">請依時間順序敘明：發生時間、地點、經過、頻率（首次／持續多久）、對工作與身心之影響。（照原話記錄，不加評價；可另附頁）</span>
+      </div>
+      <div class="fields" style="margin-top:0.5rem;">
+        <div><span>證人（如有）</span>　</div>
+        <div><span>證據（如有：訊息截圖、錄音、診斷證明等）</span>　</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>四、申訴人期望之處理方式</h2>
+      <p class="checks">
+        □ 制止行為並要求改善　□ 調整工作互動安排　□ 正式調查並依規處置　□ 其他＿＿＿＿
+      </p>
+    </section>
+
+    <div class="divider">以下由處理單位填寫</div>
+
+    <section>
+      <h2>五、受理審查</h2>
+      <p class="checks">
+        <b>審查結果</b>□ 受理，組成調查小組　□ 移轉性平程序　□ 不受理（理由：＿＿＿＿＿＿＿＿）
+      </p>
+      <div class="fields cols3">
+        <div><span>調查小組成員（至少一名與當事人無隸屬關係）</span>　</div>
+        <div><span>必要之暫時措施（如調整座位、工作分流）</span>　</div>
+        <div><span>審查日期</span>　</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>六、調查紀錄</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:14%" class="center">日期</th>
+            <th style="width:20%">對象</th>
+            <th>面談／查證摘要（詳細紀錄另附保密卷宗）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="center">　</td><td>申訴人</td><td>　</td></tr>
+          <tr><td class="center">　</td><td>被申訴人</td><td>　</td></tr>
+          <tr><td class="center">　</td><td>證人</td><td>　</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>七、調查結果</h2>
+      <div class="verdict">
+        <div>成　立</div>
+        <div>不成立</div>
+        <div>調解成立</div>
+        <div>不受理</div>
+      </div>
+      <div class="statement short">
+        <span style="color:var(--ink-light);font-size:8pt;">認定理由與事實依據：</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>八、處理措施與追蹤</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>措施（如懲處、調整職務、輔導、環境改善、教育訓練）</th>
+            <th style="width:16%">負責單位</th>
+            <th style="width:14%" class="center">完成期限</th>
+            <th style="width:18%" class="center">追蹤確認（日期）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>　</td><td>　</td><td class="center">　</td><td class="center">　</td></tr>
+          <tr><td>申訴人關懷與後續追蹤（一個月內至少一次）</td><td>人資部</td><td class="center">　</td><td class="center">　</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="pledge">
+        <b>保密與禁止報復聲明</b>
+        參與本案受理、調查之人員對案件內容負保密義務；雇主及各級主管不得因申訴人提出申訴、作證或協助調查而為解僱、降調、減薪或其他不利之處分。違反者依公司獎懲規定及相關法令處理。
+      </div>
+    </section>
+
+  </main>
+
+  <div class="signoff">
+    <div>調查小組召集人</div>
+    <div>人資主管</div>
+    <div>雇主或代理人核定</div>
+    <div>申訴人收受結果確認</div>
+  </div>
+
+  <footer class="doc-footer">
+    本表及調查卷宗由人資部彌封保存五年；統計數據（不含個資）納入年度職業安全衛生績效檢討。
+  </footer>
+
+</body>
+</html>

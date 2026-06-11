@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  spec-a4.html — 需求規格書 template（A4 直式，多頁）
+  ═══════════════════════════════════════════════════════════
+  用途：功能需求規格書（PRD／SRS），以 Cmd+P 匯出 PDF。
+  結構為：文件資訊、背景與目標、範圍、名詞定義、功能需求表、
+  非功能需求表、驗收標準、開放議題、版本修訂記錄。
+  與 uat-a4.html（驗收測試報告）成對使用：驗收項目對應
+  本文件的 FR／NFR 編號。
+
+  手動使用：替換 .doc-header 與各 section；需求列（tbody tr）
+  照樣式增刪，編號 FR-01、NFR-01 依序遞增不要跳號。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 需求必須可驗證：寫得出數字就寫數字（筆數、秒數、百分比），
+     禁用「快速」「友善」「穩定」這類無法測試的形容詞
+  3. 每條功能需求都要有編號（FR-XX）與優先級（必要／重要／可選），
+     驗收標準需逐條對應 FR／NFR 編號，不可出現無標準的「必要」需求
+  4. 範圍要同時寫「包含」與「不包含」；版本修訂記錄保留並續寫
+  5. 禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>需求規格書 SPEC-2026-011</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+      --font-display: 'Noto Serif TC', 'Songti TC', 'Noto Sans TC', 'Heiti TC', serif;
+    }
+    @page { size: A4; margin: 20mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10.5pt;
+      line-height: 1.8;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 1.2rem; margin-bottom: 0.4rem; }
+    .doc-kicker { font-size: 8.5pt; letter-spacing: 0.35em; color: var(--ink-light); margin-bottom: 0.6rem; }
+    .doc-header h1 { font-family: var(--font-display); font-size: 21pt; font-weight: 700; line-height: 1.4; }
+    .doc-meta { display: flex; gap: 2.2rem; border-bottom: 1px solid var(--rule); padding: 0.5rem 0; margin-bottom: 2rem; font-size: 8.5pt; color: var(--ink-light); flex-wrap: wrap; }
+    .doc-meta b { color: var(--ink); font-weight: 500; margin-left: 0.5em; }
+
+    /* 章節 */
+    section { margin-bottom: 2.2rem; }
+    h2 {
+      font-size: 13pt; font-weight: 700;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.9rem;
+    }
+    h3 { font-size: 11pt; font-weight: 500; color: var(--accent); margin: 1.3rem 0 0.5rem; }
+    p { margin-bottom: 0.7rem; text-align: justify; }
+    ul, ol { padding-left: 1.6rem; margin-bottom: 0.7rem; }
+
+    /* 表格 */
+    table { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.4rem 0.6rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.45rem 0.6rem; vertical-align: top; }
+    td small { color: var(--ink-light); font-size: 8pt; display: block; }
+    .center { text-align: center; }
+    .req-id { font-variant-numeric: tabular-nums; font-weight: 500; color: var(--accent); white-space: nowrap; }
+    .pri { white-space: nowrap; }
+    .pri-must { font-weight: 700; }
+
+    /* 範圍欄 */
+    .scope { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 0.8rem 0; }
+    .scope > div { border: 1px solid var(--ink); padding: 0.6rem 0.9rem; font-size: 9.5pt; }
+    .scope h3 { font-size: 8.5pt; color: var(--ink); letter-spacing: 0.25em; margin: 0 0 0.35rem; }
+    .scope ul { margin-bottom: 0; }
+
+    /* 重點框 */
+    .note { border: 1px solid var(--ink); padding: 0.7rem 1rem; margin: 1rem 0; font-size: 9.5pt; }
+    .note > b:first-child { display: block; font-size: 8.5pt; letter-spacing: 0.2em; margin-bottom: 0.25rem; }
+
+    /* 文件尾 */
+    .doc-footer { border-top: 1px solid var(--rule); margin-top: 3rem; padding-top: 0.6rem; font-size: 8pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+
+    /* 分頁控制 */
+    table, .note, .scope { break-inside: avoid; }
+    h2, h3 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <p class="doc-kicker">需求規格書</p>
+    <h1>訂單匯出與對帳功能需求規格書</h1>
+  </header>
+  <div class="doc-meta">
+    <span>文件編號<b>SPEC-2026-011</b></span>
+    <span>版本<b>v1.3</b></span>
+    <span>狀態<b>已核定</b></span>
+    <span>日期<b>2026-06-11</b></span>
+    <span>撰寫<b>產品部 林佳蓉</b></span>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>1. 背景與目標</h2>
+      <p>財務部目前以人工下載訂單後台報表，再以試算表與銀行入帳明細逐筆核對，每月結帳耗時約三個工作天，且近半年發生兩次漏對導致請款延遲。本功能目標為提供訂單明細匯出與金流自動對帳能力，將月結對帳作業時間縮短至半個工作天以內，並留存可稽核的對帳軌跡。</p>
+      <div class="note">
+        <b>成功指標</b>
+        上線後第二個月結帳週期：對帳作業時間 ≤ 4 小時、自動比對涵蓋率 ≥ 95%、人工介入僅限差異案件處理。
+      </div>
+    </section>
+
+    <section>
+      <h2>2. 範圍</h2>
+      <div class="scope">
+        <div>
+          <h3>包含</h3>
+          <ul>
+            <li>訂單明細匯出（CSV／Excel）</li>
+            <li>匯出任務中心（進度查詢、檔案下載）</li>
+            <li>銀行對帳檔匯入與自動比對</li>
+            <li>差異報告與對帳結果簽核</li>
+          </ul>
+        </div>
+        <div>
+          <h3>不包含</h3>
+          <ul>
+            <li>發票開立與折讓（既有系統，不變動）</li>
+            <li>信用卡收單行手續費試算</li>
+            <li>會計傳票自動拋轉（列入下期評估）</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>3. 名詞定義</h2>
+      <table>
+        <thead>
+          <tr><th style="width:22%">名詞</th><th>定義</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>對帳檔</td><td>銀行提供之每日入帳明細檔案，本期支援甲銀行固定欄寬格式與乙銀行 CSV 格式兩種。</td></tr>
+          <tr><td>差異案件</td><td>自動比對後無法銷帳之紀錄，分為三類：金額不符、查無訂單、查無入帳。</td></tr>
+          <tr><td>銷帳</td><td>一筆入帳紀錄與一筆（或多筆）訂單完成對應並鎖定，不得再次配對。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>4. 角色與使用情境</h2>
+      <table>
+        <thead>
+          <tr><th style="width:18%">角色</th><th>使用情境</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>財務專員</td><td>每日匯入對帳檔執行比對、處理差異案件、產出差異報告。</td></tr>
+          <tr><td>財務主管</td><td>審核對帳結果並簽核結案，調閱歷史對帳紀錄。</td></tr>
+          <tr><td>營運人員</td><td>匯出訂單明細供活動成效分析，無對帳功能權限。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>5. 功能需求</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:9%">編號</th>
+            <th style="width:18%">需求名稱</th>
+            <th>說明</th>
+            <th style="width:9%" class="center">優先級</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="req-id">FR-01</td>
+            <td>訂單明細匯出</td>
+            <td>依日期區間、訂單狀態、付款方式篩選後匯出 CSV 或 Excel；超過 1 萬筆改走非同步匯出，單次上限 30 萬筆。</td>
+            <td class="center pri pri-must">必要</td>
+          </tr>
+          <tr>
+            <td class="req-id">FR-02</td>
+            <td>匯出任務中心</td>
+            <td>非同步匯出顯示進度與完成通知；檔案保留 7 天後自動刪除，下載需登入且僅限本人任務。</td>
+            <td class="center pri pri-must">必要</td>
+          </tr>
+          <tr>
+            <td class="req-id">FR-03</td>
+            <td>對帳檔匯入</td>
+            <td>支援甲銀行固定欄寬與乙銀行 CSV 兩種格式；格式錯誤或重複匯入需於上傳階段擋下並提示行號。</td>
+            <td class="center pri pri-must">必要</td>
+          </tr>
+          <tr>
+            <td class="req-id">FR-04</td>
+            <td>自動比對與差異報告</td>
+            <td>以虛擬帳號＋金額比對銷帳；無法銷帳者分類為金額不符／查無訂單／查無入帳，產出可匯出的差異報告。</td>
+            <td class="center pri pri-must">必要</td>
+          </tr>
+          <tr>
+            <td class="req-id">FR-05</td>
+            <td>對帳結果簽核</td>
+            <td>財務專員提交對帳結果，財務主管線上簽核後鎖定該期帳務；退回需填寫理由。</td>
+            <td class="center pri">重要</td>
+          </tr>
+          <tr>
+            <td class="req-id">FR-06</td>
+            <td>排程自動對帳</td>
+            <td>每日 07:00 自動抓取銀行 SFTP 對帳檔並執行比對，結果以郵件通知財務專員。</td>
+            <td class="center pri">可選</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>6. 非功能需求</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:10%">編號</th>
+            <th style="width:18%">類別</th>
+            <th>需求</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="req-id">NFR-01</td><td>效能（匯出）</td><td>30 萬筆非同步匯出於 10 分鐘內完成；1 萬筆以內同步匯出於 30 秒內回應。</td></tr>
+          <tr><td class="req-id">NFR-02</td><td>效能（比對）</td><td>單日 5 萬筆入帳紀錄之自動比對於 3 分鐘內完成。</td></tr>
+          <tr><td class="req-id">NFR-03</td><td>權限</td><td>對帳功能僅限財務角色存取；匯出之個資欄位（收件人、電話）依角色遮罩。</td></tr>
+          <tr><td class="req-id">NFR-04</td><td>稽核</td><td>匯入、比對、簽核、下載全程留存操作軌跡（人、時、動作、對象），保留一年。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>7. 驗收標準</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:12%">對應需求</th>
+            <th>驗收標準（可直接作為驗收測試項目）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="req-id">FR-01</td><td>匯出檔欄位與後台顯示一致；以 30 萬筆實際資料執行非同步匯出，產出筆數與查詢結果相符。</td></tr>
+          <tr><td class="req-id">FR-02</td><td>任務中心顯示進度並於完成時通知；第 8 天確認檔案已不可下載；以他人帳號嘗試下載被拒。</td></tr>
+          <tr><td class="req-id">FR-03</td><td>兩種格式之正確檔可匯入；缺欄、亂碼、重複檔被擋下且錯誤訊息標明行號。</td></tr>
+          <tr><td class="req-id">FR-04</td><td>以含三類差異之測試檔執行比對，每筆差異分類正確；差異報告可匯出且筆數一致。</td></tr>
+          <tr><td class="req-id">FR-05</td><td>簽核後該期帳務鎖定不可改；退回時理由為必填且通知提交人。</td></tr>
+          <tr><td class="req-id">FR-06</td><td>排程於 07:00 ± 5 分鐘執行；SFTP 取檔失敗時發出告警郵件而非靜默略過。</td></tr>
+          <tr><td class="req-id">NFR-01～04</td><td>效能於正式環境等規格之測試環境實測達標；權限與稽核軌跡逐項抽查。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>8. 開放議題</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:7%">#</th>
+            <th>議題</th>
+            <th style="width:15%">負責人</th>
+            <th style="width:14%" class="center">預計決議</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>乙銀行對帳檔改版（9 月生效）欄位異動範圍待銀行提供新版規格。</td><td>財務部 許芳瑜</td><td class="center">2026-07-15</td></tr>
+          <tr><td>2</td><td>分期付款訂單之入帳拆分比對規則，待與收單行確認分期撥款明細格式。</td><td>產品部 林佳蓉</td><td class="center">2026-07-31</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>9. 版本修訂記錄</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:10%">版本</th>
+            <th style="width:14%" class="center">日期</th>
+            <th>修訂內容</th>
+            <th style="width:14%">修訂人</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>v0.9</td><td class="center">2026-05-12</td><td>初稿，完成需求訪談整理。</td><td>林佳蓉</td></tr>
+          <tr><td>v1.0</td><td class="center">2026-05-26</td><td>需求評審會後定稿：FR-06 由「重要」調整為「可選」。</td><td>林佳蓉</td></tr>
+          <tr><td>v1.3</td><td class="center">2026-06-11</td><td>補充 NFR-03 個資遮罩範圍；驗收標準逐條對應需求編號。</td><td>林佳蓉</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <footer class="doc-footer">
+    <span>訂單匯出與對帳功能需求規格書 · SPEC-2026-011 · v1.3</span>
+    <span>機密等級：內部使用</span>
+  </footer>
+
+</body>
+</html>

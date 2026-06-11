@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  memory/cornell-a4.html — 康乃爾筆記頁（A4 直式，單頁手寫）
+  ═══════════════════════════════════════════════════════════
+  用途：康乃爾筆記法（Cornell Note-Taking System）空白頁。
+  右側筆記欄上課／閱讀時寫；左側線索欄 24 小時內回頭補
+  關鍵字與問題；底部摘要欄用自己的話寫二到三句總結。
+  複習時遮住右欄，只看左欄線索回想內容——這頁同時是
+  筆記和自測卷。
+
+  手動使用：這是純手寫頁，直接大量列印，每堂課／每章一張。
+  只需改頁首的課程名稱欄位文字（或留白手填）。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 本頁設計為空白手寫頁，不要往欄位裡填內容；
+     使用者若要客製，只改頁首標籤與欄位比例
+  3. 三區比例（線索 30%／筆記 70%／摘要固定高）與 8mm 行距
+     是方法的一部分，不要改動
+  4. 維持單頁；禁用 emoji 與裝飾性元素
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>康乃爾筆記頁</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 12mm 13mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 9pt;
+      line-height: 1.5;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 頁首 */
+    .doc-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--ink); padding-bottom: 0.4rem; margin-bottom: 0; font-size: 9pt; }
+    .doc-header .title { font-size: 12pt; font-weight: 700; letter-spacing: 0.1em; }
+    .doc-header .fields { display: flex; gap: 1.6rem; color: var(--ink-light); font-size: 8.5pt; }
+    .doc-header .fields span b { display: inline-block; border-bottom: 1px solid var(--rule); min-width: 7em; margin-left: 0.4em; }
+
+    /* 主區 */
+    .cornell { border: 2px solid var(--ink); border-top: none; }
+    .main { display: grid; grid-template-columns: 30% 70%; height: 216mm; }
+    .cue { border-right: 2px solid var(--ink); padding: 0.4rem 0.6rem; }
+    .notes { padding: 0.4rem 0.7rem; }
+    .zone-label { font-size: 7.5pt; font-weight: 700; letter-spacing: 0.25em; color: var(--ink-light); }
+    .zone-hint { font-size: 7pt; color: var(--ink-light); margin-bottom: 0.2rem; }
+    .lines { height: calc(100% - 9mm); background-image: repeating-linear-gradient(to bottom, transparent, transparent calc(8mm - 1px), var(--rule) calc(8mm - 1px), var(--rule) 8mm); }
+    .summary { border-top: 2px solid var(--ink); padding: 0.4rem 0.7rem; height: 34mm; }
+
+    /* 頁尾 */
+    .doc-footer { margin-top: 0.5rem; font-size: 7.5pt; color: var(--ink-light); display: flex; justify-content: space-between; }
+    .doc-footer b { font-weight: 500; color: var(--ink); }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <div class="title">康乃爾筆記</div>
+    <div class="fields">
+      <span>課程／章節<b></b></span>
+      <span>日期<b></b></span>
+      <span>頁<b style="min-width:3em"></b></span>
+    </div>
+  </header>
+
+  <div class="cornell">
+    <div class="main">
+      <div class="cue">
+        <div class="zone-label">線索欄</div>
+        <div class="zone-hint">24 小時內補：關鍵字、自考問題</div>
+        <div class="lines"></div>
+      </div>
+      <div class="notes">
+        <div class="zone-label">筆記欄</div>
+        <div class="zone-hint">上課當下寫：重點、例子、自己的話，留白別擠</div>
+        <div class="lines"></div>
+      </div>
+    </div>
+    <div class="summary">
+      <div class="zone-label">摘要欄</div>
+      <div class="zone-hint">複習完寫：這頁在講什麼，二到三句，寫不出來就是還沒懂</div>
+      <div class="lines"></div>
+    </div>
+  </div>
+
+  <footer class="doc-footer">
+    <span>複習法：遮住<b>筆記欄</b>，只看<b>線索欄</b>把內容講出來，講不出的段落重讀</span>
+    <span>康乃爾筆記法 · 每堂課一張</span>
+  </footer>
+
+</body>
+</html>

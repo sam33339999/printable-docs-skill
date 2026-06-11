@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  expense-a4.html — 費用報銷單 template（A4 直式，單頁）
+  ═══════════════════════════════════════════════════════════
+  用途：費用報銷單（含出差費用），以 Cmd+P 匯出 PDF 後簽核或
+  直接列印手填。結構為：申請人資訊、出差資訊（非出差可整段刪）、
+  費用明細表、合計、簽核欄。
+
+  手動使用：替換 .applicant 與明細列（tbody tr）；明細列可增刪，
+  「單據」欄填發票／收據張數，無單據者註明原因。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 金額一律加千分位、靠右對齊（沿用 .num），合計需與明細加總一致
+  3. 科目僅限：交通、住宿、餐費、誤餐、郵電、文具、業務招待、雜支
+  4. 維持單頁；明細超過 12 列時拆成兩張單據，不要縮小字級
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>費用報銷單 E-2026-0142</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 16mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.7;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 抬頭 */
+    .letterhead { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--ink); padding-bottom: 0.7rem; }
+    .letterhead .co { font-size: 13pt; font-weight: 700; letter-spacing: 0.08em; }
+    .letterhead .doc-no { font-size: 8.5pt; color: var(--ink-light); text-align: right; line-height: 1.6; }
+    .letterhead .doc-no b { color: var(--ink); font-weight: 500; margin-left: 0.5em; }
+
+    .doc-title { text-align: center; font-size: 17pt; font-weight: 700; letter-spacing: 0.5em; margin: 1.2rem 0 1.2rem; text-indent: 0.5em; }
+
+    /* 申請人資訊 */
+    .applicant { border-top: 1px solid var(--ink); border-bottom: 1px solid var(--rule); padding: 0.6rem 0.2rem; margin-bottom: 1rem; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.3rem 1.5rem; font-size: 9.5pt; }
+    .applicant span { color: var(--ink-light); font-size: 8pt; display: block; }
+
+    /* 出差資訊 */
+    .trip { border-bottom: 1px solid var(--rule); padding: 0 0.2rem 0.6rem; margin-bottom: 1rem; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0.3rem 1.5rem; font-size: 9.5pt; }
+    .trip span { color: var(--ink-light); font-size: 8pt; display: block; }
+
+    /* 明細表 */
+    table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.4rem 0.5rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.45rem 0.5rem; vertical-align: top; }
+    td small { color: var(--ink-light); font-size: 8pt; display: block; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .center { text-align: center; }
+
+    /* 合計 */
+    .totals { width: 64mm; margin-left: auto; margin-top: 0.6rem; font-size: 9.5pt; }
+    .totals div { display: flex; justify-content: space-between; padding: 0.25rem 0.5rem; }
+    .totals .grand { border-top: 2px solid var(--ink); font-size: 11pt; font-weight: 700; margin-top: 0.2rem; padding-top: 0.45rem; }
+
+    /* 備註 */
+    .remarks { margin-top: 1.2rem; font-size: 8.5pt; color: var(--ink-light); }
+    .remarks h2 { font-size: 8.5pt; color: var(--ink); letter-spacing: 0.25em; margin-bottom: 0.3rem; }
+    .remarks ol { padding-left: 1.4rem; }
+
+    /* 簽核欄 */
+    .approvals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-top: 2.2rem; }
+    .approvals div { border: 1px solid var(--rule); height: 22mm; padding: 0.35rem 0.6rem; font-size: 8pt; color: var(--ink-light); letter-spacing: 0.15em; }
+
+    .doc-footer { margin-top: 1.6rem; padding-top: 0.5rem; border-top: 1px solid var(--rule); font-size: 7.5pt; color: var(--ink-light); text-align: center; }
+
+    table, .totals, .approvals { break-inside: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="letterhead">
+    <div class="co">亙宇數位股份有限公司</div>
+    <div class="doc-no">
+      <div>單號<b>E-2026-0142</b></div>
+      <div>申請日期<b>2026-06-11</b></div>
+    </div>
+  </header>
+
+  <h1 class="doc-title">費用報銷單</h1>
+
+  <div class="applicant">
+    <div><span>申請人</span>陳柏宇</div>
+    <div><span>部門</span>後端平台組</div>
+    <div><span>費用歸屬專案</span>訂單服務效能改造</div>
+    <div><span>付款方式</span>匯入薪轉帳戶</div>
+  </div>
+
+  <div class="trip">
+    <div><span>出差事由（非出差報銷可刪除本列）</span>高雄機房資料庫升級現場支援</div>
+    <div><span>出差地點</span>高雄市楠梓區</div>
+    <div><span>出差期間</span>06-08 至 06-09</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:6%">#</th>
+        <th style="width:13%" class="center">日期</th>
+        <th style="width:12%">科目</th>
+        <th>說明</th>
+        <th class="num" style="width:14%">金額（NT$）</th>
+        <th class="center" style="width:10%">單據</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td class="center">06-08</td>
+        <td>交通</td>
+        <td>高鐵台北—左營 來回<small>商務艙因標準艙完售，已附訂位證明</small></td>
+        <td class="num">2,980</td>
+        <td class="center">2 張</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td class="center">06-08</td>
+        <td>住宿</td>
+        <td>楠梓區商務旅館一晚</td>
+        <td class="num">2,200</td>
+        <td class="center">1 張</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td class="center">06-08</td>
+        <td>餐費</td>
+        <td>午、晚餐（兩人，含廠商工程師一名）</td>
+        <td class="num">860</td>
+        <td class="center">2 張</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td class="center">06-09</td>
+        <td>交通</td>
+        <td>左營—機房計程車來回<small>深夜時段無大眾運輸</small></td>
+        <td class="num">540</td>
+        <td class="center">2 張</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td class="center">06-09</td>
+        <td>雜支</td>
+        <td>機房備品（標籤帶、理線魔鬼氈）</td>
+        <td class="num">420</td>
+        <td class="center">1 張</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <div><span>單據共計</span><span>8 張</span></div>
+    <div class="grand"><span>合計 NT$</span><span>7,000</span></div>
+  </div>
+
+  <div class="remarks">
+    <h2>報銷規則</h2>
+    <ol>
+      <li>單據請依明細編號順序黏貼於黏存單，電子發票附載具明細。</li>
+      <li>單筆超過 10,000 元或無單據之支出，須事先取得部門主管核准並附說明。</li>
+      <li>業務招待需註明對象公司與人數。</li>
+    </ol>
+  </div>
+
+  <div class="approvals">
+    <div>申請人</div>
+    <div>部門主管</div>
+    <div>財務審核</div>
+    <div>核准</div>
+  </div>
+
+  <footer class="doc-footer">
+    本單據經完整簽核後始得付款，財務部留存正本七年。
+  </footer>
+
+</body>
+</html>

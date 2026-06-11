@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════
+  interview-a4.html — 面試評估表 template（A4 直式，單頁）
+  ═══════════════════════════════════════════════════════════
+  用途：面試官評估表，每位面試官每關各填一張，以 Cmd+P 匯出
+  PDF 或列印手填。結構為：應徵者資訊、評估維度表（評分＋
+  行為事例）、整體評語、錄用建議、簽名。
+
+  手動使用：替換 .candidate 資訊與評估維度列；維度列（tbody tr）
+  可依職缺增刪，技術職與非技術職換掉「專業能力」的觀察重點即可。
+
+  給 AI 的指示：以本檔為底稿產出文件時——
+  1. 保留 <head> 內全部內容（字型設定是列印中文的關鍵，不得改動）
+  2. 評分僅限 1–5 整數；評語必須寫具體行為事例，不寫「感覺不錯」
+  3. 錄用建議僅限四檔：強烈推薦／推薦／保留／不推薦，勾選一項
+  4. 維持單頁；禁用 emoji 與裝飾性元素，維持本檔的編輯式風格
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>面試評估表</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* PingFang（macOS 系統中文 fallback）無法嵌入列印 PDF，
+       中文一律明確指定可嵌入字型，禁止落到 system-ui / 裸 sans-serif */
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --rule: #c9c9c9;
+      --accent: #1e4e79;
+      --bg-soft: #f5f5f3;
+      --font-main: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei', sans-serif;
+    }
+    @page { size: A4; margin: 16mm 18mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      font-size: 10pt;
+      line-height: 1.7;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media screen {
+      body { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem; }
+    }
+
+    /* 文件頭 */
+    .doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 0.8rem; margin-bottom: 0.9rem; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-header h1 { font-size: 16pt; font-weight: 700; letter-spacing: 0.2em; }
+    .doc-header .conf { font-size: 8pt; color: var(--ink-light); letter-spacing: 0.2em; }
+
+    /* 應徵者資訊 */
+    .candidate { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.3rem 1.5rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.7rem; margin-bottom: 1.2rem; font-size: 9.5pt; }
+    .candidate span { color: var(--ink-light); font-size: 8pt; display: block; }
+
+    /* 區塊 */
+    section { margin-bottom: 1.3rem; }
+    h2 {
+      font-size: 10pt; font-weight: 700; letter-spacing: 0.25em;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.7rem;
+      margin-bottom: 0.6rem;
+    }
+
+    /* 評估維度表 */
+    table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+    th { text-align: left; font-weight: 500; font-size: 8.5pt; letter-spacing: 0.1em; border-bottom: 2px solid var(--ink); padding: 0.35rem 0.5rem; }
+    td { border-bottom: 1px solid var(--rule); padding: 0.45rem 0.5rem; vertical-align: top; }
+    td small { color: var(--ink-light); font-size: 8pt; display: block; }
+    .center { text-align: center; }
+    .score { font-variant-numeric: tabular-nums; font-weight: 700; }
+
+    .scale-note { font-size: 8pt; color: var(--ink-light); margin-top: 0.3rem; }
+
+    /* 整體評語 */
+    .comment { border: 1px solid var(--rule); min-height: 30mm; padding: 0.6rem 0.9rem; font-size: 9.5pt; }
+
+    /* 錄用建議 */
+    .verdict { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; }
+    .verdict div { border: 1px solid var(--ink); text-align: center; padding: 0.45rem 0; font-size: 10pt; letter-spacing: 0.2em; }
+    .verdict .checked { background: var(--ink); color: #fff; font-weight: 700; }
+
+    /* 簽名 */
+    .signoff { display: flex; gap: 3rem; margin-top: 1.8rem; }
+    .signoff div { flex: 1; border-top: 1px solid var(--ink); padding-top: 0.35rem; font-size: 8.5pt; color: var(--ink-light); }
+
+    .doc-footer { margin-top: 1.5rem; padding-top: 0.5rem; border-top: 1px solid var(--rule); font-size: 7.5pt; color: var(--ink-light); text-align: center; }
+
+    section, table, .verdict, .signoff { break-inside: avoid; }
+    h2 { break-after: avoid; }
+  </style>
+</head>
+<body>
+
+  <header class="doc-header">
+    <h1>面試評估表</h1>
+    <span class="conf">機密文件 · 僅限招募流程使用</span>
+  </header>
+
+  <div class="candidate">
+    <div><span>應徵者</span>李宗翰</div>
+    <div><span>應徵職缺</span>資深後端工程師</div>
+    <div><span>面試關卡</span>第二關（技術面談）</div>
+    <div><span>面試日期</span>2026-06-11</div>
+    <div><span>面試官</span>陳柏宇</div>
+    <div><span>形式</span>現場 90 分鐘</div>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>評估維度</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:18%">維度</th>
+            <th>觀察重點與行為事例</th>
+            <th class="center" style="width:12%">評分</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>專業能力</td>
+            <td>系統設計題（高併發庫存）能主動提出分片與降級方案，並正確指出快取一致性的取捨；對交易隔離級別的追問回答精確。</td>
+            <td class="center score">5</td>
+          </tr>
+          <tr>
+            <td>問題解決</td>
+            <td>除錯情境題先確認觀測數據再假設，思路有條理；但對「資訊不足時如何決策」的追問偏保守，傾向等待更多數據。</td>
+            <td class="center score">4</td>
+          </tr>
+          <tr>
+            <td>溝通協作</td>
+            <td>說明技術方案時會主動確認對方理解程度；描述前公司跨部門衝突案例時，能客觀陳述雙方立場而非單方抱怨。</td>
+            <td class="center score">4</td>
+          </tr>
+          <tr>
+            <td>學習成長</td>
+            <td>近一年自學 Rust 並有開源貢獻記錄（PR 已查證）；能具體說出從前一份工作失敗專案學到的三件事。</td>
+            <td class="center score">4</td>
+          </tr>
+          <tr>
+            <td>動機與適配</td>
+            <td>對本公司產品有實際使用經驗，提問集中在團隊技術決策流程，顯示在意工程文化；薪資期望在核定範圍內。</td>
+            <td class="center score">4</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="scale-note">評分標準：5 明顯高於職級要求　4 符合且部分超出　3 符合基本要求　2 部分不足　1 明顯不足</p>
+    </section>
+
+    <section>
+      <h2>整體評語</h2>
+      <div class="comment">
+        技術深度是本次候選人中最佳，系統設計與除錯能力均達資深水準。需注意其決策風格偏保守，入職後建議先安排有明確規格的專案建立信任，再逐步放權。前公司離職原因（組織重整）已於人資關卡查核無虞。建議由用人主管於第三關確認其對 on-call 輪值的接受度。
+      </div>
+    </section>
+
+    <section>
+      <h2>錄用建議</h2>
+      <div class="verdict">
+        <div>強烈推薦</div>
+        <div class="checked">推　薦</div>
+        <div>保　留</div>
+        <div>不推薦</div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="signoff">
+    <div>面試官簽名及日期</div>
+    <div>人資收件確認</div>
+  </div>
+
+  <footer class="doc-footer">
+    本表單涉及個人資料，評估結束後由人資部依個資保存規範管理，面試官不得自行留存複本。
+  </footer>
+
+</body>
+</html>
