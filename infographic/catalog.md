@@ -57,14 +57,21 @@ theme                           ← 可選；正式文件建議自訂色
    鮮豔漸層，與模板庫的編輯式風格衝突；或用 theme 把主色改
    `#1e4e79`。
 5. icon 欄位會打 `weavefox.cn` API，離線或正式交付不要用。
+6. **chart 類 label 控制在 8 個全形字內**。模板標籤欄寬寫死
+   （120px、單行），過長會換行外溢壓到下一列。make-svg.py 會
+   量測文字真實矩形：plain-text 標籤溢出會自動加 lineNumber
+   修正（stderr 有 auto-fit 通知）；其他相撞修不了會報錯退出
+   ——看到 layout error 就縮短 label 或換模板，別硬調尺寸
+   （內部版面是固定座標，`--width/--height` 救不了）。
 
 ## 本目錄檔案
 
 | 檔案 | 用途 |
 |---|---|
 | `templates.json` | 機器可讀模板清單（name／category／data_shape／note） |
-| `make-svg.py` | syntax → 乾淨 SVG 的產製工具 |
+| `make-svg.py` | syntax → 乾淨 SVG 的產製工具（含文字相撞檢查＋auto-fit） |
 | `batch-test.py` | 全量回歸測試（升級 bundle 後重跑） |
+| `tests/test-overlap.py` | 文字相撞回歸測試（獨立量測 make-svg.py 產出物） |
 | `preview.html` | 165 個模板的視覺總覽（瀏覽器開） |
 | `a4-embed.html` | 內嵌 A4 的驗證成品（6 圖、已過列印測試） |
 | `vendor/infographic.min.js` | 本地 bundle v0.2.x（MIT） |
