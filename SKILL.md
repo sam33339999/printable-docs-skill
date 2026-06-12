@@ -69,16 +69,18 @@ font-family: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei
 
 ## 維護：與開發 repo 同步
 
-資產有兩份：`/Users/yaxin/html-demo` 是開發測試場（含 batch-test.py
-回歸測試），本 skill 目錄是發行副本。在 repo 新增模板、升級 bundle
-或重跑批次測試後，執行同步：
+資產有兩份：`/Users/yaxin/html-demo` 是開發源頭（本檔正本在
+`skill/SKILL.md`，含 batch-test.py 回歸測試），本 skill 目錄是發行
+副本——而且自身是 git repo（remote: sam33339999/printable-docs-skill），
+被誤蓋或 git 回退後內容會丟。repo 有更新、或本目錄被打回舊版時，
+一鍵同步：
 
 ```bash
-cp -R /Users/yaxin/html-demo/templates/ ~/.claude/skills/printable-docs/templates/
-cp /Users/yaxin/html-demo/antv-test/{make-svg.py,templates.json,preview.html} ~/.claude/skills/printable-docs/infographic/
-cp /Users/yaxin/html-demo/antv-test/vendor/infographic.min.js ~/.claude/skills/printable-docs/infographic/vendor/
+/Users/yaxin/html-demo/sync-skill.sh
 ```
 
-**`catalog.md` 不可直接覆蓋**——skill 內這份的路徑已改寫成相對引用
-（`antv-test/make-svg.py` → `make-svg.py`）。repo 版有內容更新時，
-複製過來後需重做同樣的路徑替換。
+腳本會同步 SKILL.md、templates/、infographic 工具鏈與 bundle，
+並自動處理 `catalog.md` 的路徑改寫（`antv-test/make-svg.py` →
+`make-svg.py`）。**同步後在本目錄 git commit**，之後誤回退也能
+從歷史找回。手改本檔等於改到副本，記得回寫 repo 的
+`skill/SKILL.md`，否則下次同步會被蓋掉。
