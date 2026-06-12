@@ -11,8 +11,13 @@ agent 要在文件裡放資訊圖表時，照以下三步取用。
    ```bash
    python3 make-svg.py 檔案.syntax -o 圖.svg
    ```
-3. **內嵌進 A4 模板**：SVG 直接貼進 HTML（單檔自包含、離線可印），
-   外層必加：
+3. **內嵌進 A4 模板（佔位符替換，不要讀 SVG 內容）**：HTML 裡寫
+   `<figure><!--SVG: 圖.svg--></figure>`（路徑相對於 HTML 檔），再跑
+   ```bash
+   python3 embed-svg.py 檔.html
+   ```
+   就地替換成真 SVG。**禁止 cat／Read SVG 再貼進 HTML**——SVG 動輒
+   數十 KB，多圖文件會撐爆上下文。外層必加：
    ```css
    figure svg { width: 100%; height: auto; max-height: 110mm; }
    ```
@@ -70,6 +75,7 @@ theme                           ← 可選；正式文件建議自訂色
 |---|---|
 | `templates.json` | 機器可讀模板清單（name／category／data_shape／note） |
 | `make-svg.py` | syntax → 乾淨 SVG 的產製工具（含文字相撞檢查＋auto-fit） |
+| `embed-svg.py` | 把 HTML 內 `<!--SVG: 檔-->` 佔位符替換成 SVG（agent 免讀圖） |
 | `batch-test.py` | 全量回歸測試（升級 bundle 後重跑） |
 | `tests/test-overlap.py` | 文字相撞回歸測試（獨立量測 make-svg.py 產出物） |
 | `preview.html` | 165 個模板的視覺總覽（瀏覽器開） |
