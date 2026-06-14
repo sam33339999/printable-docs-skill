@@ -1,6 +1,6 @@
 # AntV Infographic 模組目錄（agent 取用指南）
 
-165 個模板已全數通過標準資料形狀渲染測試（2026-06-11，`batch-test.py` 產出）。
+170 個模板（165 原有 + 5 新增：kanban×3、treemap×2），bundle 已更新至含新結構的版本（2026-06-14）。
 agent 要在文件裡放資訊圖表時，照以下三步取用。
 
 ## 取用三步驟
@@ -37,7 +37,7 @@ theme                           ← 可選；正式文件建議自訂色
   colorPrimary #1e4e79
 ```
 
-## 分類與選用建議（165 個，6 類）
+## 分類與選用建議（170 個，8 類）
 
 | 類別 | 數量 | 基礎版型 | 文件對應 |
 |---|---|---|---|
@@ -47,6 +47,65 @@ theme                           ← 可選；正式文件建議自訂色
 | chart | 15 | bar、column、line、pie、pie-donut、wordcloud | budget 數據、esg 佔比、report 統計 |
 | hierarchy | 14 | mindmap（branch／level 各 5 變體）、structure、structure-mirror、tree | 組織圖、study-plan 知識架構 |
 | relation | 7 | dagre-flow、network、circle | postmortem／8d 因果、系統架構 |
+| **kanban** | **3** | simple、compact-card、badge-card | sprint board、任務追蹤、產品路線圖 |
+| **treemap** | **2** | simple（squarify）、binary | 預算分配、程式碼規模、市占率比較 |
+
+## Kanban 看板用法
+
+`category` 欄位（**top-level，非 attributes**）決定欄位歸屬，欄位顯示順序依資料插入順序。
+
+```
+infographic kanban-compact-card
+data
+  title Sprint 22 — 任務看板
+  lists
+    - label 登入頁面重構
+      desc 改用 OAuth 2.0 流程
+      category: 待辦
+    - label 首頁效能優化
+      desc LCP 從 4.2s 降至 1.8s
+      category: 進行中
+    - label 使用者大頭貼上傳
+      desc 壓縮至 256x256 WebP
+      category: 已完成
+theme
+  colorPrimary #6366f1
+```
+
+| 模板 | item 樣式 | value 欄位 |
+|---|---|---|
+| `kanban-simple` | 純文字 label + desc | 不顯示 |
+| `kanban-compact-card` | 卡片 label + desc | 不顯示 |
+| `kanban-badge-card` | 卡片 + badge | value 顯示為 badge（優先級標籤） |
+
+## Treemap 樹狀熱圖用法
+
+資料用 **`root` 階層**（不用 `lists`），各節點的 `value` 決定面積大小。
+
+```
+infographic treemap-simple
+data
+  title 年度預算分配
+  root
+    label 總預算
+    children
+      - label 工程部門
+        value 4200
+        children
+          - label 後端工程
+            value 1800
+          - label 前端工程
+            value 1200
+      - label 行銷
+        value 2800
+theme
+  colorPrimary #8b5cf6
+```
+
+| 模板 | 切割方式 | 適用情境 |
+|---|---|---|
+| `treemap-simple` | squarify（接近正方形） | 預算、市占率等比例分析 |
+| `treemap-binary` | binary（水平/垂直交替） | 程式碼規模等結構化比較 |
 
 ## 硬規則（踩過坑的）
 
@@ -54,7 +113,7 @@ theme                           ← 可選；正式文件建議自訂色
    `Alibaba PuHuiTi`，拔掉 runtime 後該字型不存在，macOS 會
    fallback 到 PingFang → 列印 PDF 中文整段消失。
 2. **直式版型必加 max-height**（timeline、roadmap-vertical、
-   list-column 等）：viewBox 窄高，`width:100%` 會放大到溢出頁面。
+   list-column、kanban 等）：viewBox 窄高，`width:100%` 會放大到溢出頁面。
 3. **compare-binary 系列頂層 label 不顯示**，內容要寫在
    children（label＋desc）；`compare-hierarchy-left-right` 實測
    只渲染根節點，要做左右對照樹改用 `hierarchy-structure-mirror`。
@@ -68,6 +127,9 @@ theme                           ← 可選；正式文件建議自訂色
    修正（stderr 有 auto-fit 通知）；其他相撞修不了會報錯退出
    ——看到 layout error 就縮短 label 或換模板，別硬調尺寸
    （內部版面是固定座標，`--width/--height` 救不了）。
+7. **kanban `category` 必須是 top-level 欄位**，不要寫在 `attributes` 下面。
+8. **treemap 資料用 `root` 不用 `lists`**。必須有 `root.children` 才能渲染，
+   純單層 root 沒有 children 只會顯示一個色塊。
 
 ## 本目錄檔案
 
@@ -78,6 +140,6 @@ theme                           ← 可選；正式文件建議自訂色
 | `embed-svg.py` | 把 HTML 內 `<!--SVG: 檔-->` 佔位符替換成 SVG（agent 免讀圖） |
 | `batch-test.py` | 全量回歸測試（升級 bundle 後重跑） |
 | `tests/test-overlap.py` | 文字相撞回歸測試（獨立量測 make-svg.py 產出物） |
-| `preview.html` | 165 個模板的視覺總覽（瀏覽器開） |
+| `preview.html` | 165 個原始模板的視覺總覽（瀏覽器開） |
 | `a4-embed.html` | 內嵌 A4 的驗證成品（6 圖、已過列印測試） |
-| `vendor/infographic.min.js` | 本地 bundle v0.2.x（MIT） |
+| `vendor/infographic.min.js` | 本地 bundle（含 kanban、treemap，2026-06-14 更新） |
