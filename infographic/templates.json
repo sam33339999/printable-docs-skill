@@ -1002,40 +1002,5 @@
   "category": "sequence",
   "tested": true,
   "data_shape": "label+desc"
- },
- {
-  "name": "kanban-simple",
-  "category": "kanban",
-  "tested": true,
-  "data_shape": "category+label+desc",
-  "note": "items 用 category 欄位分欄（top-level，非 attributes）；欄位順序依資料插入順序；適合 sprint board、任務追蹤"
- },
- {
-  "name": "kanban-compact-card",
-  "category": "kanban",
-  "tested": true,
-  "data_shape": "category+label+desc",
-  "note": "compact-card 樣式，label + desc 各一行；適合卡片內容較多的 sprint board"
- },
- {
-  "name": "kanban-badge-card",
-  "category": "kanban",
-  "tested": true,
-  "data_shape": "category+label+desc+value",
-  "note": "value 欄位顯示為 badge（優先級、狀態標籤等）；適合產品路線圖、需標示優先級的看板"
- },
- {
-  "name": "treemap-simple",
-  "category": "treemap",
-  "tested": true,
-  "data_shape": "root+children+value",
-  "note": "資料用 root 階層（非 lists）；root.children 為第一層，各 child 可再有 children；value 決定面積；squarify 切割方式（接近正方形）；適合預算、市占率等比例分析"
- },
- {
-  "name": "treemap-binary",
-  "category": "treemap",
-  "tested": true,
-  "data_shape": "root+children+value",
-  "note": "同 treemap-simple 但用 binary 切割（水平/垂直交替），各區塊更對稱；適合程式碼規模、檔案大小等結構化比較"
  }
 ]
