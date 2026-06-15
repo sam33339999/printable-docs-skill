@@ -1,0 +1,21 @@
+infographic chart-line
+data
+  title 碳排放趨勢（tCO₂e）
+  lists
+    - label 範疇一
+      value 8.2
+      value 7.6
+      value 7.1
+      value 6.3
+    - label 範疇二
+      value 156.4
+      value 136.7
+      value 118.2
+      value 95.6
+  months
+    - label 2022
+    - label 2023
+    - label 2024
+    - label 2025
+theme
+  colorPrimary #2d5a3d

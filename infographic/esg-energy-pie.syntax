@@ -1,0 +1,10 @@
+infographic list-sector-plain-text
+data
+  title 2025 用電來源
+  lists
+    - label 再生能源
+      desc 35% 綠電採購
+    - label 一般電網
+      desc 65% 化石電網
+theme
+  colorPrimary #2d5a3d

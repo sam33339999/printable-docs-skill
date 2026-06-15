@@ -1,0 +1,14 @@
+infographic chart-bar-plain-text
+data
+  title 人均年度訓練時數
+  lists
+    - label 資安
+      value 8.5
+    - label 軟體技能
+      value 6.2
+    - label  ESG
+      value 3.8
+    - label 溝通管理
+      value 3.0
+theme
+  colorPrimary #2d5a3d
