@@ -183,6 +183,8 @@ font-family: 'Noto Sans TC', 'Heiti TC', 'Arial Unicode MS', 'Microsoft JhengHei
 | 格線容器包超過半頁內容還加 `break-inside:avoid` | 整塊卡住撐出頁面。超過半頁的欄位移除 avoid |
 | infographic 放格線欄但沒縮 `max-height` | 圖超寬溢出。cols-2 改 80mm，cols-3 改 50mm |
 | 直接改 `output.html` 而非 `pages/` 裡的源頭 | 下次 assemble 蓋掉。只改 pages/ 再重組 |
+| 圖表和 table 放同一個 `<section>` | `section { break-inside:avoid }` 把圖＋表整塊鎖住推到下一頁。圖表改用獨立 `<div>`（不套 `<section>`）放在 table 前，讓兩者各自走自然分頁 |
+| 直式/漏斗 SVG 在 `cols-2-1` 主欄沒加 inline `max-height` | shell 的 `.cols-2 figure svg { max-height:80mm }` 只管 cols-2，cols-2-1 主欄沒被覆蓋，SVG 等比放大把整欄撐高、note 被推走。每個直式圖的 `<figure>` 加 `style="max-height:XXmm;overflow:hidden"` |
 
 ## 維護：與開發 repo 同步
 
